@@ -6,5 +6,20 @@ export default function Dashboard({
 }: {
 	session: typeof authClient.$Infer.Session;
 }) {
-	return <></>;
+	const privateData = session.user;
+	return (
+		<>
+			{privateData ? (
+				<div>
+					<h1>Dashboard</h1>
+					<p>Welcome {privateData.name}</p>
+					{/* Render more private data here */}
+				</div>
+			) : (
+				<p>
+					You are not logged in. Please <a href="/login">login</a>.
+				</p>
+			)}
+		</>
+	);
 }
