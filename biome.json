@@ -29,7 +29,9 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "tab"
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
   },
   "assist": {
     "actions": {
@@ -42,9 +44,11 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+
       "correctness": {
         "useExhaustiveDependencies": "info"
       },
+
       "nursery": {
         "useSortedClasses": {
           "level": "warn",
@@ -54,29 +58,32 @@
           }
         }
       },
+
       "performance": {
         "noBarrelFile": "warn",
         "noReExportAll": "warn"
       },
+
       "style": {
         "noNamespace": "off",
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error",
-        "useImportType": "warn"
+        "noParameterAssign": "warn",
+        "useAsConstAssertion": "warn",
+        "useDefaultParameterLast": "warn",
+        "useEnumInitializers": "off",
+        "useSelfClosingElements": "warn",
+        "useSingleVarDeclarator": "warn",
+        "noUnusedTemplateLiteral": "off",
+        "useNumberNamespace": "off",
+        "noInferrableTypes": "off",
+        "noUselessElse": "warn",
+        "useImportType": "info",
+        "noImplicitBoolean": "off"
       }
     }
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double"
+      "semicolons": "always"
     }
   },
   "extends": ["ultracite/core"]
