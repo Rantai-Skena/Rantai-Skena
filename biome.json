@@ -30,8 +30,7 @@
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 100
+    "indentWidth": 2
   },
   "assist": {
     "actions": {
@@ -43,12 +42,17 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-
-      "correctness": {
-        "useExhaustiveDependencies": "info"
+      "recommended": false,
+      "complexity": {
+        "noUselessFragments": "off"
       },
-
+      "correctness": {
+        "useExhaustiveDependencies": "warn",
+        "noUnusedFunctionParameters": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
+      },
       "nursery": {
         "useSortedClasses": {
           "level": "warn",
@@ -56,35 +60,34 @@
           "options": {
             "functions": ["clsx", "cva", "cn"]
           }
-        }
+        },
+        "noParametersOnlyUsedInRecursion": "off"
       },
-
-      "performance": {
-        "noBarrelFile": "warn",
-        "noReExportAll": "warn"
-      },
-
       "style": {
-        "noNamespace": "off",
         "noParameterAssign": "warn",
-        "useAsConstAssertion": "warn",
-        "useDefaultParameterLast": "warn",
+        "useAsConstAssertion": "off",
+        "useDefaultParameterLast": "off",
         "useEnumInitializers": "off",
         "useSelfClosingElements": "warn",
-        "useSingleVarDeclarator": "warn",
-        "noUnusedTemplateLiteral": "off",
+        "useSingleVarDeclarator": "off",
+        "noUnusedTemplateLiteral": "warn",
         "useNumberNamespace": "off",
         "noInferrableTypes": "off",
         "noUselessElse": "warn",
-        "useImportType": "info",
-        "noImplicitBoolean": "off"
+        "noNestedTernary": "off"
       }
     }
   },
   "javascript": {
     "formatter": {
-      "semicolons": "always"
+      "quoteStyle": "double",
+      "indentStyle": "space",
+      "indentWidth": 2
     }
   },
-  "extends": ["ultracite/core"]
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
 }
