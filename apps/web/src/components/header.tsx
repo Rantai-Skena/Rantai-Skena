@@ -14,6 +14,18 @@ const menuItems = [
   { name: "About", href: "#link" },
 ];
 
+const artistMenus = [
+  { name: "Home", href: "#link" },
+  { name: "Explore Gigs", href: "#link" },
+  { name: "Chatbot", href: "#link" },
+]
+
+const agentMenus = [
+  { name: "Home", href: "#link" },
+  { name: "Dashboard", href: "#link" },
+  { name: "Explore Artists", href: "#link" },
+]
+
 export const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -37,7 +49,7 @@ export const HeroHeader = () => {
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link aria-label="home" className="flex items-center space-x-2" href="/">
-                <Logo />
+                Rantai Skena
               </Link>
 
               <button
@@ -83,7 +95,7 @@ export const HeroHeader = () => {
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <Button
                   asChild
-                  className={cn(isScrolled && "lg:hidden")}
+                
                   size="sm"
                   variant="outline"
                 >
@@ -91,14 +103,9 @@ export const HeroHeader = () => {
                     <span>Login</span>
                   </Link>
                 </Button>
-                <Button asChild className={cn(isScrolled && "lg:hidden")} size="sm">
+                <Button asChild size="sm" variant="destructive">
                   <Link href="#">
-                    <span>Sign Up</span>
-                  </Link>
-                </Button>
-                <Button asChild className={cn(isScrolled ? "lg:inline-flex" : "hidden")} size="sm">
-                  <Link href="#">
-                    <span>Get Started</span>
+                    <span>Register</span>
                   </Link>
                 </Button>
               </div>
