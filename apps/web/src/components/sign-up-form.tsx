@@ -164,5 +164,5 @@ export default function SignUpForm({
       </div>
       <div className="-z-10 absolute bottom-0 left-0 h-1/2 min-w-screen bg-linear-to-r from-autumn-500 via-lavender-500 to-sky-500 opacity-30 blur-3xl" />
     </Card>
-  );
+  )
 }

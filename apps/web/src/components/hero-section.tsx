@@ -1,4 +1,5 @@
 import { SendHorizonal } from "lucide-react";
+import Link from "next/link";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
@@ -119,7 +120,7 @@ export default function HeroSection() {
               </span>
             </h1>
             <div className="flex items-center justify-center gap-15 max-lg:flex-col">
-              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all duration-700 hover:bg-gradient-artist">
+              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(31,154,255,0.5)]">
                 <Card>
                   <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 self-stretch px-10 py-4 max-lg:h-46 lg:max-w-124">
                     <h1 className="bg-gradient-artist bg-clip-text text-h5 text-transparent lg:text-h3">
@@ -133,7 +134,7 @@ export default function HeroSection() {
                   </div>
                 </Card>
               </div>
-              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all duration-700 hover:bg-gradient-agent">
+              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(255,78,134,0.5)]">
                 <Card>
                   <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 px-10 py-4 max-lg:h-46 lg:max-w-124">
                     <h1 className="bg-gradient-agent bg-clip-text text-h5 text-transparent lg:text-h3">
@@ -158,11 +159,13 @@ export default function HeroSection() {
                 <div className="text-wrap text-h5 max-md:text-caption max-lg:text-mobile">
                   Sign up now and make your sound heard across the city.
                 </div>
-                <Button variant="destructive" size="lg">
-                  Get Started
-                </Button>
+                <Link href="/login">
+                  <Button variant="destructive" size="lg">
+                    Get Started
+                  </Button>
+                </Link>
               </div>
-              <div className="overflow-hidden p-4 max-md:hidden">
+              <div className="hover:-rotate-6 overflow-hidden p-4 duration-300 max-md:hidden">
                 <img
                   src="frequency.png"
                   alt="icon"

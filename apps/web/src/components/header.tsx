@@ -18,13 +18,13 @@ const artistMenus = [
   { name: "Home", href: "#link" },
   { name: "Explore Gigs", href: "#link" },
   { name: "Chatbot", href: "#link" },
-]
+];
 
 const agentMenus = [
   { name: "Home", href: "#link" },
   { name: "Dashboard", href: "#link" },
   { name: "Explore Artists", href: "#link" },
-]
+];
 
 export const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
@@ -39,17 +39,25 @@ export const HeroHeader = () => {
   }, []);
   return (
     <header>
-      <nav className="fixed z-20 w-full px-2" data-state={menuState && "active"}>
+      <nav
+        className="fixed z-20 w-full px-2"
+        data-state={menuState && "active"}
+      >
         <div
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
-            isScrolled && "max-w-4xl rounded-2xl border bg-background/50 backdrop-blur-lg lg:px-5"
+            isScrolled &&
+              "max-w-4xl rounded-2xl border bg-background/50 backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
-              <Link aria-label="home" className="flex items-center space-x-2" href="/">
-                Rantai Skena
+              <Link
+                aria-label="home"
+                className="flex items-center space-x-2 font-bold"
+                href="/"
+              >
+                RantaiSkena
               </Link>
 
               <button
@@ -93,12 +101,7 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button
-                  asChild
-                
-                  size="sm"
-                  variant="outline"
-                >
+                <Button asChild size="sm" variant="outline">
                   <Link href="#">
                     <span>Login</span>
                   </Link>
