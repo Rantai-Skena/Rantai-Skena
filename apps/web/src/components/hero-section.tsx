@@ -28,15 +28,20 @@ import { Card } from "./ui/card";
 // };
 
 export default function HeroSection() {
+  const scrollToWhy = () => {
+    document.getElementById("why-section")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
   return (
     <>
       {/* <HeroHeader /> */}
 
-      <main className="flex flex-col gap-46 overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
+      <main className="flex flex-col gap-14 overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
         <section className="min-h-screen">
           <img
             alt="crowd"
-            className="-z-10 absolute h-full w-full"
+            className="-z-10 absolute h-full w-full object-cover"
             src="crowd.png"
           />
           <div className="absolute bottom-0 left-0 h-46 w-full bg-linear-to-b from-transparent to-background" />
@@ -44,7 +49,7 @@ export default function HeroSection() {
             <div className="relative z-10 mx-auto max-w-4xl text-center">
               <TextEffect
                 as="h1"
-                className="text-nowrap font-bold text-4xl md:text-5xl"
+                className="font-bold text-4xl md:text-5xl lg:text-nowrap"
                 preset="fade-in-blur"
                 speedSegment={0.3}
               >
@@ -96,33 +101,32 @@ export default function HeroSection() {
                     className="rounded-(--radius)"
                     size="sm"
                     variant="destructive"
+                    onClick={scrollToWhy}
                   >
-                    <span className="hidden px-2 md:block">Get Started</span>
-                    <SendHorizonal
-                      className="relative mx-auto size-5 md:hidden"
-                      strokeWidth={2}
-                    />
+                    <span className="px-2">Get Started</span>
                   </Button>
                 </div>
               </AnimatedGroup>
             </div>
           </div>
         </section>
-        <section className="">
-          <div className="flex flex-col items-center justify-center gap-15">
-            <h1 className="text-h1">
+        <section id="why-section" className="pt-24">
+          <div className="flex flex-col items-center justify-center gap-15 px-10 lg:px-20">
+            <h1 className="text-center text-h4 max-lg:flex max-lg:flex-col lg:text-h1">
               Why Join&nbsp;
-              <span className="text-autumn-500">RantaiSkena</span>?
+              <span className="text-autumn-500">
+                RantaiSkena<span className="text-white">?</span>
+              </span>
             </h1>
-            <div className="flex justify-center gap-15 px-20">
+            <div className="flex items-center justify-center gap-15 max-lg:flex-col">
               <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all duration-700 hover:bg-gradient-artist">
                 <Card>
-                  <div className="flex w-124 flex-col items-center justify-center gap-4 px-10 py-4">
-                    <h1 className="bg-gradient-artist bg-clip-text text-h3 text-transparent">
+                  <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 self-stretch px-10 py-4 max-lg:h-46 lg:max-w-124">
+                    <h1 className="bg-gradient-artist bg-clip-text text-h5 text-transparent lg:text-h3">
                       For Artist
                     </h1>
                     <div className="h-px w-full bg-gradient-artist px-2" />
-                    <p className="text-center text-white">
+                    <p className="lg:headline text-center text-bodyLarge text-white">
                       Grow your audience and get discovered by bookers and fans
                       through your profile and live gigs.
                     </p>
@@ -131,12 +135,12 @@ export default function HeroSection() {
               </div>
               <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all duration-700 hover:bg-gradient-agent">
                 <Card>
-                  <div className="flex w-124 flex-col items-center justify-center gap-4 px-10 py-4">
-                    <h1 className="bg-gradient-agent bg-clip-text text-h3 text-transparent">
+                  <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 px-10 py-4 max-lg:h-46 lg:max-w-124">
+                    <h1 className="bg-gradient-agent bg-clip-text text-h5 text-transparent lg:text-h3">
                       For Agent
                     </h1>
                     <div className="h-px w-full bg-gradient-agent px-2" />
-                    <p className="text-center text-white">
+                    <p className="text-center text-bodyLarge text-white lg:text-mobile">
                       Find the right band that fits you and connect directly
                       with artists you.
                     </p>
@@ -146,19 +150,19 @@ export default function HeroSection() {
             </div>
           </div>
         </section>
-        <section className="mb-36">
-          <div className="flex flex-col items-center justify-center px-20">
+        <section className="py-24">
+          <div className="flex flex-col items-center justify-center px-10 lg:px-20">
             <Card className="flex flex-row items-center justify-center gap-8 rounded-2xl p-10">
-              <div className="flex w-full flex-col items-start justify-center gap-7">
-                <div className="text-h3">Ready to join?</div>
-                <div className="text-wrap text-h5">
+              <div className="flex w-full flex-col items-start justify-center gap-7 max-md:items-center max-md:text-center">
+                <div className="text-h3 max-lg:text-h5">Ready to join?</div>
+                <div className="text-wrap text-h5 max-md:text-caption max-lg:text-mobile">
                   Sign up now and make your sound heard across the city.
                 </div>
                 <Button variant="destructive" size="lg">
                   Get Started
                 </Button>
               </div>
-              <div className="overflow-hidden p-4">
+              <div className="overflow-hidden p-4 max-md:hidden">
                 <img
                   src="frequency.png"
                   alt="icon"

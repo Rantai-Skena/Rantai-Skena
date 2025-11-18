@@ -125,47 +125,47 @@ body {
   --text-small--letter-spacing: -0.6px;
 
   --color-neutral-1000: #000000;
-  --color-neutral-900:  #333333; 
-  --color-neutral-700:  #666666;
-  --color-neutral-500:  #999999;
-  --color-neutral-300:  #B2B2B2;
-  --color-neutral-100:  #E5E5E5;
-  --color-neutral-050:  #FFFFFF;
+  --color-neutral-900: #333333;
+  --color-neutral-700: #666666;
+  --color-neutral-500: #999999;
+  --color-neutral-300: #b2b2b2;
+  --color-neutral-100: #e5e5e5;
+  --color-neutral-050: #ffffff;
 
-  --color-autumn-1000: #581E00;
-  --color-autumn-900:  #843A00; 
-  --color-autumn-700:  #9E4C00;
-  --color-autumn-500:  #B86200;
-  --color-autumn-300:  #D49135;
-  --color-autumn-100:  #F7D794;
-  --color-autumn-050:  #FBEDC9;
-  
-  --color-sky-1000: #093F93;
-  --color-sky-900:  #0F59B7; 
-  --color-sky-700:  #1677DB;
-  --color-sky-500:  #1F9AFF;
-  --color-sky-300:  #57BCFF;
-  --color-sky-100:  #78D1FF;
-  --color-sky-050:  #D2F4FF;
+  --color-autumn-1000: #581e00;
+  --color-autumn-900: #843a00;
+  --color-autumn-700: #9e4c00;
+  --color-autumn-500: #b86200;
+  --color-autumn-300: #d49135;
+  --color-autumn-100: #f7d794;
+  --color-autumn-050: #fbedc9;
 
-  --color-lavender-1000: #7A0E5B;
-  --color-lavender-900:  #931864; 
-  --color-lavender-700:  #DB397C;
-  --color-lavender-500:  #FF4E86;
-  --color-lavender-300:  #FF7A97;
-  --color-lavender-100:  #FF7A97;
-  --color-lavender-050:  #FFDEDB;
+  --color-sky-1000: #093f93;
+  --color-sky-900: #0f59b7;
+  --color-sky-700: #1677db;
+  --color-sky-500: #1f9aff;
+  --color-sky-300: #57bcff;
+  --color-sky-100: #78d1ff;
+  --color-sky-050: #d2f4ff;
+
+  --color-lavender-1000: #7a0e5b;
+  --color-lavender-900: #931864;
+  --color-lavender-700: #db397c;
+  --color-lavender-500: #ff4e86;
+  --color-lavender-300: #ff7a97;
+  --color-lavender-100: #ffb8b9;
+  --color-lavender-050: #ffdedb;
 
   --background-image-gradient-artist: linear-gradient(
     90deg,
-    #1F9AFF 0%,
-    #CD00E9 100%
+    #1f9aff 0%,
+    #cd00e9 100%
   );
 
   --background-image-gradient-agent: linear-gradient(
     90deg,
-    #FF4E86 0%,
-    #CD00E9 100%
+    #ff4e86 0%,
+    #cd00e9 100%
   );
 }
 
