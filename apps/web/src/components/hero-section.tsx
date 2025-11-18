@@ -112,17 +112,17 @@ export default function HeroSection() {
           </div>
         </section>
         <section id="why-section" className="pt-24">
-          <div className="flex flex-col items-center justify-center gap-15 px-10 lg:px-20">
-            <h1 className="text-center text-h4 max-lg:flex max-lg:flex-col lg:text-h1">
+          <div className="flex flex-col items-center justify-center gap-15 px-15 lg:px-20">
+            <h1 className="text-center text-h4 max-md:flex max-md:flex-col md:text-h3 lg:text-h1">
               Why Join&nbsp;
               <span className="text-autumn-500">
                 RantaiSkena<span className="text-white">?</span>
               </span>
             </h1>
-            <div className="flex items-center justify-center gap-15 max-lg:flex-col">
-              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(31,154,255,0.5)]">
+            <div className="grid grid-rows-2 gap-15 lg:grid-cols-2 lg:grid-rows-none">
+              <div className="h-full w-full transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(31,154,255,0.5)]">
                 <Card>
-                  <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 self-stretch px-10 py-4 max-lg:h-46 lg:max-w-124">
+                  <div className="flex w-full flex-col items-center justify-center gap-4 self-stretch px-10 py-4">
                     <h1 className="bg-gradient-artist bg-clip-text text-h5 text-transparent lg:text-h3">
                       For Artist
                     </h1>
@@ -134,9 +134,9 @@ export default function HeroSection() {
                   </div>
                 </Card>
               </div>
-              <div className="h-fit w-fit transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(255,78,134,0.5)]">
-                <Card>
-                  <div className="flex h-56 max-w-102 flex-col items-center justify-center gap-4 px-10 py-4 max-lg:h-46 lg:max-w-124">
+              <div className="h-full w-full transform rounded-xl bg-transparent p-px transition-all hover:bg-gradient-artist hover:shadow-[0_0_10px_1px_rgba(255,78,134,0.5)]">
+                <Card className="h-full w-full">
+                  <div className="flex w-full flex-col items-center justify-center gap-4 px-10 py-4">
                     <h1 className="bg-gradient-agent bg-clip-text text-h5 text-transparent lg:text-h3">
                       For Agent
                     </h1>

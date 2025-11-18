@@ -5,17 +5,13 @@ import React from "react";
 import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Logo } from "./logo";
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "", href: "" },
 ];
 
 const artistMenus = [
-  { name: "Home", href: "#link" },
+  { name: "Dashboard", href: "#link" },
   { name: "Explore Gigs", href: "#link" },
   { name: "Chatbot", href: "#link" },
 ];
@@ -101,14 +97,9 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button asChild size="sm" variant="outline">
-                  <Link href="#">
-                    <span>Login</span>
-                  </Link>
-                </Button>
                 <Button asChild size="sm" variant="destructive">
-                  <Link href="#">
-                    <span>Register</span>
+                  <Link href="/login">
+                    <span className="px-3">Login</span>
                   </Link>
                 </Button>
               </div>
