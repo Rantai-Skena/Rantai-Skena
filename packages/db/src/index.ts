@@ -1,17 +1,14 @@
 import dotenv from "dotenv";
 
 dotenv.config({
-	path: "../../apps/server/.env",
+  path: "../../apps/server/.env",
 });
 
-import { neon, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import ws from "ws";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
-neonConfig.webSocketConstructor = ws;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-// To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
-// neonConfig.poolQueryViaFetch = true
-
-const sql = neon(process.env.DATABASE_URL || "");
-export const db = drizzle(sql);
+export const db = drizzle(pool);
