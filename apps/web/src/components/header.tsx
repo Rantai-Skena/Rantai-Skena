@@ -97,7 +97,9 @@ export const HeroHeader = () => {
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <Button asChild size="sm" variant="destructive">
                   <Link href="/login">
-                    <span className="px-3">Login</span>
+                    <span className="px-3 py-1 font-bold tracking-wider">
+                      Login
+                    </span>
                   </Link>
                 </Button>
               </div>

@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
@@ -31,7 +32,7 @@ export default function SignInForm({
         {
           onSuccess: () => {
             router.push("/dashboard");
-            toast.success("Sign in successful");
+            toast.success("Berhasil masuk");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -41,8 +42,8 @@ export default function SignInForm({
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        email: z.string().email("Alamat email tidak valid"),
+        password: z.string().min(8, "Password minimal 8 karakter"),
       }),
     },
   });
@@ -52,102 +53,134 @@ export default function SignInForm({
   }
 
   return (
-      <Card className="mx-auto mt-10 w-full max-w-md rounded-lg border p-6">
-        <h1 className="mb-6 text-center font-bold text-3xl">Login</h1>
-        <form
-          className="space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <div>
-            <form.Field name="email">
-              {(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Username</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    type="email"
-                    value={field.state.value}
-                    placeholder="Enter your username"
-                  />
-                  {field.state.meta.errors.map((error) => (
-                    <p className="text-red-500" key={error?.message}>
-                      {error?.message}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </form.Field>
-          </div>
-
-          <div>
-            <form.Field name="password">
-              {(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor={field.name}>Password</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    type="password"
-                    value={field.state.value}
-                    placeholder="Enter your password"
-                  />
-                  {field.state.meta.errors.map((error) => (
-                    <p className="text-red-500" key={error?.message}>
-                      {error?.message}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </form.Field>
-          </div>
-
-          <form.Subscribe>
-            {(state) => (
-              <Button
-                className="w-full"
-                disabled={!state.canSubmit || state.isSubmitting}
-                type="submit"
-                variant="destructive"
+    <section className="flex px-4 py-16">
+      <div className="m-auto w-full max-w-md">
+        <Card className="overflow-hidden rounded-3xl border border-white/10 bg-background/60 shadow-2xl backdrop-blur-lg">
+          <div className="p-8">
+            <div className="text-center">
+              <Link
+                href="/"
+                aria-label="go home"
+                className="mx-auto block w-fit"
               >
-                {state.isSubmitting ? "Submitting..." : "Login"}
-              </Button>
-            )}
-          </form.Subscribe>
-          <form.Subscribe>
-            {(state) => (
-              <Button
-                className="w-full"
-                disabled={!state.canSubmit || state.isSubmitting}
-                type="submit"
-                variant="outline"
-              >
-                {state.isSubmitting ? "Submitting..." : "Sign in with Google"}
-              </Button>
-            )}
-          </form.Subscribe>
-        </form>
+                <h1 className="font-bold text-2xl text-white tracking-wide">
+                  RantaiSkena
+                </h1>
+              </Link>
+              <h2 className="mt-6 mb-2 font-semibold text-white text-xl">
+                Masuk ke RantaiSkena
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Selamat datang kembali! Masuk untuk melanjutkan
+              </p>
+            </div>
 
-        <div className="mt-8 flex flex-col text-center">
-          <h2 className="text-caption">Don't have an account?</h2>
-          <Button
-            className="text-autumn-500"
-            onClick={onSwitchToSignUp}
-            variant="link"
-            size="sm"
-          >
-            Register
-          </Button>
-        </div>
-        <div className="-z-10 absolute bottom-0 left-0 h-1/2 min-w-screen bg-linear-to-r from-autumn-500 via-lavender-500 to-sky-500 opacity-30 blur-3xl" />
-      </Card>
+            <form
+              className="mt-8 space-y-6"
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                form.handleSubmit();
+              }}
+            >
+              <div>
+                <form.Field name="email">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor={field.name}
+                        className="block text-sm text-white"
+                      >
+                        Email
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="email"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="rounded-sm border border-white/20 bg-background/40 text-white placeholder:text-muted-foreground focus:border-primary"
+                        placeholder="masukkan email anda"
+                      />
+                      {field.state.meta.errors.map((error) => (
+                        <p
+                          className="text-red-400 text-sm"
+                          key={error?.message}
+                        >
+                          {error?.message}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </form.Field>
+              </div>
+
+              <div>
+                <form.Field name="password">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor={field.name}
+                          className="text-sm text-white"
+                        >
+                          Password
+                        </Label>
+                      </div>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type="password"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="rounded-sm border border-white/20 bg-background/40 text-white placeholder:text-muted-foreground focus:border-primary"
+                        placeholder="masukkan password anda"
+                      />
+                      {field.state.meta.errors.map((error) => (
+                        <p
+                          className="text-red-400 text-sm"
+                          key={error?.message}
+                        >
+                          {error?.message}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </form.Field>
+              </div>
+
+              <form.Subscribe>
+                {(state) => (
+                  <Button
+                    type="submit"
+                    disabled={!state.canSubmit || state.isSubmitting}
+                    className="w-full rounded-sm bg-primary py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {state.isSubmitting ? "Memproses..." : "Masuk"}
+                  </Button>
+                )}
+              </form.Subscribe>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground text-sm">
+                Belum punya akun?{" "}
+                <Button
+                  onClick={onSwitchToSignUp}
+                  variant="link"
+                  className="h-auto p-0 text-autumn-400 hover:text-autumn-300"
+                >
+                  Daftar sekarang
+                </Button>
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <div className="-z-10 pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-r from-autumn-500/30 via-lavender-500/30 to-sky-500/30 opacity-50 blur-3xl" />
+      </div>
+    </section>
   );
 }

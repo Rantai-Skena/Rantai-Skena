@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,13 @@ const stats = [
   { value: "1.5K+", label: "Artists curated" },
   { value: "800+", label: "Agents matched" },
   { value: "96%", label: "Success stories completed" },
-];
+] as const;
 
 const heroHighlights = [
   "Verified artists and agents across the region",
   "AI-assisted matchmaking to reduce downtime",
   "Dedicated support and on-call event staff",
-];
+] as const;
 
 const steps = [
   {
@@ -39,11 +40,53 @@ const steps = [
       "Receive verified offers, negotiate, and keep every deal organized in one trusted workspace.",
     accent: "bg-gradient-lavender",
   },
-];
+] as const;
+
+const TYPING_WORDS = ["Stage", "Story", "Sound"] as const;
+
+function TypingAnimation() {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = TYPING_WORDS[currentWordIndex];
+    const shouldDelete = isDeleting;
+
+    const timeout = setTimeout(
+      () => {
+        if (shouldDelete) {
+          setCurrentText(currentWord.substring(0, currentText.length - 1));
+          if (currentText.length === 1) {
+            setIsDeleting(false);
+            setCurrentWordIndex((prev) => (prev + 1) % TYPING_WORDS.length);
+          }
+        } else {
+          setCurrentText(currentWord.substring(0, currentText.length + 1));
+
+          if (currentText === currentWord) {
+            setTimeout(() => setIsDeleting(true), 1500);
+          }
+        }
+      },
+      shouldDelete ? 100 : 100,
+    );
+
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, currentWordIndex]);
+
+  return (
+    <span className="inline-block">
+      Your <span className="text-autumn-500">{currentText}</span>
+      <span className="animate-pulse text-autumn-500">|</span>.
+    </span>
+  );
+}
 
 export default function HeroSection() {
   const scrollToWhy = () => {
-    document.getElementById("why-section")?.scrollIntoView({
+    const element = document.getElementById("why-section");
+    element?.scrollIntoView({
       behavior: "smooth",
     });
   };
@@ -54,22 +97,17 @@ export default function HeroSection() {
         <section className="relative min-h-screen">
           <img
             alt="crowd"
-            className="-z-10 absolute h-full w-full object-cover"
+            className="-z-10 absolute inset-0 h-full w-full object-cover"
             src="crowd.png"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-background" />
           <div className="absolute bottom-0 left-0 h-46 w-full bg-linear-to-b from-transparent to-background" />
-          <div className="relative mx-auto max-w-6xl px-6 pt-28 pb-20 lg:pt-44">
+          <div className="relative mx-auto max-w-6xl px-6 pt-28 pb-20 lg:pt-36">
             <div className="relative z-10 grid gap-12 rounded-[32px] border border-white/10 bg-background/60 px-6 py-10 shadow-2xl ring-1 ring-white/20 backdrop-blur-lg lg:grid-cols-[1.25fr_0.75fr] lg:px-12 lg:py-12">
               <div className="space-y-8 text-center text-white md:text-left lg:text-left">
-                <TextEffect
-                  as="h1"
-                  className="font-bold text-4xl leading-tight md:text-5xl lg:text-h1"
-                  preset="fade-in-blur"
-                  speedSegment={0.3}
-                >
-                  Your Stage. Your Story. Your Sound.
-                </TextEffect>
+                <h1 className="font-bold text-4xl leading-tight md:text-5xl lg:text-h1">
+                  <TypingAnimation />
+                </h1>
                 <TextEffect
                   as="p"
                   className="mx-auto max-w-2xl text-pretty text-lg md:text-left"
@@ -131,17 +169,16 @@ export default function HeroSection() {
                     </Button>
                   </div>
                 </AnimatedGroup>
-
-                <div className="grid gap-6 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6">
                   {stats.map((stat) => (
                     <div
                       key={stat.label}
-                      className="rounded-2xl border border-white/10 bg-background/40 px-6 py-5 text-left"
+                      className="rounded-xl border border-white/10 bg-background/40 px-4 py-3 text-left sm:rounded-2xl sm:px-6 sm:py-5"
                     >
-                      <p className="font-bold text-h3 text-white">
+                      <p className="font-bold text-h4 text-white sm:text-h3">
                         {stat.value}
                       </p>
-                      <p className="mt-2 text-muted-foreground text-sm">
+                      <p className="mt-1 text-muted-foreground text-xs sm:mt-2 sm:text-sm">
                         {stat.label}
                       </p>
                     </div>
