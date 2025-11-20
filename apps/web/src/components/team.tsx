@@ -5,14 +5,14 @@ const members = [
   {
     name: "Gibran Tegar Ramadhan Putra Lynardi",
     role: "Lead - Product Manager",
-    avatar: "anggota-tim/aldo.JPG",
-
+    avatar: "anggota-tim/gibran.jpg",
+    heightOffset: "-mt-6",
     link: "https://www.linkedin.com/in/gibranlynardi/",
   },
   {
     name: "Muhammad Rifqi Ilham",
     role: "Business Development",
-    avatar: "anggota-tim/aldo.JPG",
+    avatar: "anggota-tim/rifqi.png",
 
     link: "https://www.linkedin.com/in/rifqi-ilham/",
   },
@@ -26,14 +26,14 @@ const members = [
   {
     name: "Ananda Gautama Sekar Khosmana",
     role: "Software Engineer",
-    avatar: "anggota-tim/aldo.JPG",
+    avatar: "anggota-tim/nanda.jpeg",
 
     link: "https://www.linkedin.com/in/anandagautama/",
   },
   {
     name: "Inayah Saffanah Asri",
     role: "UI/UX Designer",
-    avatar: "anggota-tim/aldo.JPG",
+    avatar: "anggota-tim/inayah.jpeg",
     link: "https://www.linkedin.com/in/inayah-saffanah-asri-234970302/",
   },
 ] as const;

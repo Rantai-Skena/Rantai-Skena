@@ -256,7 +256,7 @@ export default function HeroSection() {
         <LandingPageContent />
 
         <section className="py-24">
-          <div className="mx-auto px-20 lg:px-40">
+          <div className="mx-auto px-2 lg:px-30">
             <Card className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-background/80 via-background/60 to-background/40 p-8 shadow-2xl shadow-black/20 backdrop-blur-sm lg:p-12">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
 

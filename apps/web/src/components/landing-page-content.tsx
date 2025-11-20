@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function LandingPageContent() {
   return (
-    <section className="py-10 md:py-16">
+    <section className="py-6 md:py-16">
       <div className="mx-auto max-w-6xl px-6">
         <div className="s grid gap-10 p-10 md:grid-cols-2">
           <div className="space-y-6 text-white">
