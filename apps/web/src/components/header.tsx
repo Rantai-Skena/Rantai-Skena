@@ -6,9 +6,7 @@ import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const menuItems = [
-  { name: "", href: "" },
-];
+const menuItems = [{ name: "", href: "" }];
 
 const artistMenus = [
   { name: "Dashboard", href: "#link" },
@@ -36,21 +34,21 @@ export const HeroHeader = () => {
   return (
     <header>
       <nav
-        className="fixed z-20 w-full px-2"
+        className="fixed z-20 w-full px-2 transition-colors duration-500 ease-in-out"
         data-state={menuState && "active"}
       >
         <div
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "max-w-4xl rounded-2xl border bg-background/50 backdrop-blur-lg lg:px-5",
+              "max-w-4xl rounded-2xl border bg-background/60 shadow-md backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
               <Link
                 aria-label="home"
-                className="flex items-center space-x-2 font-bold"
+                className="flex items-center space-x-2 font-bold text-lg tracking-wide"
                 href="/"
               >
                 RantaiSkena
@@ -67,11 +65,11 @@ export const HeroHeader = () => {
             </div>
 
             <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-              <ul className="flex gap-8 text-sm">
+              <ul className="flex gap-10 font-medium text-sm">
                 {menuItems.map((item, index) => (
                   <li key={index}>
                     <Link
-                      className="block text-muted-foreground duration-150 hover:text-accent-foreground"
+                      className="block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline"
                       href={item.href as unknown as UrlObject}
                     >
                       <span>{item.name}</span>
@@ -87,7 +85,7 @@ export const HeroHeader = () => {
                   {menuItems.map((item, index) => (
                     <li key={index}>
                       <Link
-                        className="block text-muted-foreground duration-150 hover:text-accent-foreground"
+                        className="block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline"
                         href={item.href as unknown as UrlObject}
                       >
                         <span>{item.name}</span>
