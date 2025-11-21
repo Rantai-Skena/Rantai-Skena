@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 // import { headers } from "next/headers";
 import { authClient } from "@/lib/auth-client";
+import DashboardAgent from "./dashboard-agent";
 // import { redirect } from "next/navigation";
 import DashboardArtist from "./dashboard-artist";
-import DashboardAgent from "./dashboard-agent";
 export default function DashboardPage() {
   // const session = await authClient.getSession({
   // 	fetchOptions: {
@@ -49,8 +49,8 @@ export default function DashboardPage() {
 
   // TODO: ganti role
   if (session?.user.name !== "ananda") {
-    return <DashboardArtist session={session} />
+    return <DashboardArtist session={session} />;
   }
 
-  return <DashboardAgent session={session} />
+  return <DashboardAgent session={session} />;
 }

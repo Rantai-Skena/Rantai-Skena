@@ -6,7 +6,5 @@ import { useState } from "react";
 import PickRole from "@/components/pick-role";
 
 export default function Onboarding() {
-  return (
-    <PickRole />
-  );
+  return <PickRole />;
 }

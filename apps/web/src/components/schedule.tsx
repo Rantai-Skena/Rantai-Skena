@@ -2,32 +2,59 @@ import Calendar from "./calendar";
 import { Card } from "./ui/card";
 
 export default function Schedule() {
-  const hours = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",];
+  const hours = [
+    "00",
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+  ];
 
-  const scedules = [{
-    start: new Date(2025, 6, 6),
-    end: new Date(2025, 6, 13),
-    label: "Summer Workshop",
-    available: true,
-    startTime: "10:00 AM",
-    endTime: "05:00 PM",
-  },
-  {
-    start: new Date(2025, 6, 18),
-    end: new Date(2025, 6, 26),
-    label: "Rekaman Album Baru",
-    available: true,
-    startTime: "09:00 AM",
-    endTime: "07:00 PM",
-  },
-  {
-    start: new Date(2025, 6, 3),
-    end: new Date(2025, 6, 3),
-    label: "Konser Amal",
-    available: true,
-    startTime: "08:00 PM",
-    endTime: "10:00 PM",
-  },]
+  const scedules = [
+    {
+      start: new Date(2025, 6, 6),
+      end: new Date(2025, 6, 13),
+      label: "Summer Workshop",
+      available: true,
+      startTime: "10:00 AM",
+      endTime: "05:00 PM",
+    },
+    {
+      start: new Date(2025, 6, 18),
+      end: new Date(2025, 6, 26),
+      label: "Rekaman Album Baru",
+      available: true,
+      startTime: "09:00 AM",
+      endTime: "07:00 PM",
+    },
+    {
+      start: new Date(2025, 6, 3),
+      end: new Date(2025, 6, 3),
+      label: "Konser Amal",
+      available: true,
+      startTime: "08:00 PM",
+      endTime: "10:00 PM",
+    },
+  ];
 
   return (
     <div className="flex w-full gap-10">

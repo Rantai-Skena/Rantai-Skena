@@ -78,7 +78,7 @@ export default function MyApplication() {
       accepted: "approved",
       pending: "pending",
       rejected: "rejected",
-      completed: "completed"
+      completed: "completed",
     };
 
     const targetStatus = statusMapping[activeTab as keyof typeof statusMapping];

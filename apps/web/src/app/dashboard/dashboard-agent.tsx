@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import MyEvent from "@/components/my-event";
 import { Button } from "@/components/ui/button";
 import type { authClient } from "@/lib/auth-client";
 import { HeroHeader } from "../../components/header";
 import MyApplication from "../../components/my-application";
 import MyMusic from "../../components/my-music";
 import Schedule from "../../components/schedule";
-import MyEvent from "@/components/my-event";
 
 export default function DashboardAgent({
   session,

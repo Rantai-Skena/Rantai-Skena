@@ -47,7 +47,7 @@ export default function OnboardingArtist() {
       instagram: "",
       youtube: "",
     },
-    onSubmit: async ({ value }) => { },
+    onSubmit: async ({ value }) => {},
     validators: {
       onSubmit: z.object({
         name: z.string().min(1, "Name must be at least 1 characters"),
@@ -244,16 +244,18 @@ export default function OnboardingArtist() {
                                     ]);
                                   }
                                 }}
-                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${
+                                  selected
                                     ? "border-purple-500"
                                     : "border-white/40 bg-transparent hover:bg-white/10"
-                                  }`}
+                                }`}
                               >
                                 <span
-                                  className={`${selected
+                                  className={`${
+                                    selected
                                       ? "bg-gradient-artist bg-clip-text text-transparent"
                                       : "text-white"
-                                    }`}
+                                  }`}
                                 >
                                   {g}
                                 </span>
