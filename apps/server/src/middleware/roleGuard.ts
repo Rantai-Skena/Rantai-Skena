@@ -9,6 +9,7 @@ export const roleGuard = (
 ): MiddlewareHandler => {
   return async (c, next) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    console.debug("[roleGuard] session payload", { session });
 
     if (!session) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -27,6 +28,7 @@ export const roleGuard = (
       createdAt: Date;
       updatedAt: Date;
     }>;
+    console.debug("[roleGuard] current user fetched", { currentUser });
 
     if (!currentUser) {
       return c.json({ error: "User not found" }, 404);

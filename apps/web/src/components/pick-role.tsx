@@ -1,9 +1,49 @@
+"use client";
+
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "./ui/card";
 
 export default function PickRole() {
+  const router = useRouter();
+  const [loadingRole, setLoadingRole] = useState<"artist" | "agent" | null>(null);
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
+
+  const handleRoleSelect = async (role: "artist" | "agent") => {
+    if (loadingRole) return;
+
+    setLoadingRole(role);
+
+    try {
+      const res = await fetch(`${baseUrl}/api/auth/role`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ role }),
+      });
+
+      if (!res.ok) {
+        const errorPayload = await res.json().catch(() => ({}));
+        throw new Error(
+          (errorPayload as { error?: string }).error ?? "Failed to update role",
+        );
+      }
+
+      router.push(role === "artist" ? "/onboarding/artist" : "/onboarding/agent");
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to update your role. Please try again.");
+    } finally {
+      setLoadingRole(null);
+    }
+  };
+
   return (
     <div className="flex flex-col p-4">
       <Link href="/" className="contents">
@@ -29,9 +69,13 @@ export default function PickRole() {
               <p className="text-center text-caption lg:text-bodyLarge">
                 Showcase your portofolio and connect with the right agents.
               </p>
-              <Link href="/onboarding/artist">
-                <Button variant="destructive">Continue as Artist</Button>
-              </Link>
+              <Button
+                variant="destructive"
+                disabled={loadingRole !== null}
+                onClick={() => void handleRoleSelect("artist")}
+              >
+                {loadingRole === "artist" ? "Setting role..." : "Continue as Artist"}
+              </Button>
             </div>
           </Card>
           <Card className="h-full transform px-10 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,78,134,0.35)]">
@@ -45,9 +89,13 @@ export default function PickRole() {
                 Discovering emerging artist, manage bookings, and find your next
                 big act.
               </p>
-              <Link href="/onboarding/agent">
-                <Button variant="destructive">Continue as Agent</Button>
-              </Link>
+              <Button
+                variant="destructive"
+                disabled={loadingRole !== null}
+                onClick={() => void handleRoleSelect("agent")}
+              >
+                {loadingRole === "agent" ? "Setting role..." : "Continue as Agent"}
+              </Button>
             </div>
           </Card>
         </div>

@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import z from "zod";
 import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,53 @@ export default function OnboardingArtist() {
       instagram: "",
       youtube: "",
     },
-    onSubmit: async ({ value }) => {},
+    onSubmit: async ({ value }) => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+        if (!baseUrl) {
+          toast.error("Server URL is not configured");
+          return;
+        }
+        const payload = {
+          stageName: value.name,
+          city: value.location,
+          genre: value.genre.join(", "),
+          bio: value.bio,
+          instagram: value.instagram,
+          spotify: value.spotify,
+          youtube: value.youtube,
+        };
+
+        const res = await fetch(`${baseUrl}/api/artist/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (!res.ok || !data?.success) {
+          toast.error(
+            data?.error ?? "Failed to save artist profile. Please try again.",
+          );
+          return;
+        }
+
+        toast.success("Artist profile saved!");
+
+        router.push("/dashboard");
+      } catch (err) {
+        console.error(err);
+        toast.error("Something went wrong. Please try again.");
+      }
+    },
     validators: {
       onSubmit: z.object({
         name: z.string().min(1, "Name must be at least 1 characters"),
@@ -60,6 +107,7 @@ export default function OnboardingArtist() {
       }),
     },
   });
+
 
   if (isPending) {
     return <Loader />;
@@ -244,18 +292,16 @@ export default function OnboardingArtist() {
                                     ]);
                                   }
                                 }}
-                                className={`rounded-md border px-1 py-0.5 text-small transition ${
-                                  selected
-                                    ? "border-purple-500"
-                                    : "border-white/40 bg-transparent hover:bg-white/10"
-                                }`}
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
+                                  ? "border-purple-500"
+                                  : "border-white/40 bg-transparent hover:bg-white/10"
+                                  }`}
                               >
                                 <span
-                                  className={`${
-                                    selected
-                                      ? "bg-gradient-artist bg-clip-text text-transparent"
-                                      : "text-white"
-                                  }`}
+                                  className={`${selected
+                                    ? "bg-gradient-artist bg-clip-text text-transparent"
+                                    : "text-white"
+                                    }`}
                                 >
                                   {g}
                                 </span>
