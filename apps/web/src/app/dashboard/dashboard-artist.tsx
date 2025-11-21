@@ -24,14 +24,13 @@ export default function DashboardArtist({
   return (
     <>
       <HeroHeader />
-      // PERBAIKAN 1: Gunakan min-h-screen untuk layout utama
       <div className="flex min-h-screen w-full bg-background pt-20">
-        <aside className="flex w-64 flex-col items-center gap-4 bg-card p-6 shadow-xl">
-          <div className="flex flex-col gap-2 px-4">
+        <aside className="flex w-fit flex-col items-center gap-4 bg-card p-6 shadow-xl">
+          <div className="flex flex-col items-center gap-2 px-4">
             <div className="h-40 w-40 overflow-hidden rounded-full bg-gradient-artist" />
             <div className="flex flex-col items-center gap-2">
-              <h1 className="text-h4">NAMABAND</h1>
-              <h5 className="text-bodyLarge">username</h5>
+              <h1 className="text-h4">{privateData.name}</h1>
+              <h5 className="text-bodyLarge">{privateData.email}</h5>
             </div>
           </div>
           <nav className="flex flex-col gap-2">

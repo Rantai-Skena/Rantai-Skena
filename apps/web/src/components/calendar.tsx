@@ -222,13 +222,11 @@ const Calendar: React.FC<CalendarProps> = ({
                 disabled={!status.inRange || !status.range?.available}
                 className={cn(
                   "relative h-8 w-full text-center font-bold text-base transition-all duration-200",
-                  {
-                    // Current month styling
-                    "text-white": isCurrentMonth,
-                    "text-neutral-500": !isCurrentMonth,
+                  { 
+                    "z-20 text-white": isCurrentMonth,
+                    "z-20 text-neutral-900": !isCurrentMonth,  
 
-                    // Today styling
-                    "after:absolute after:top-0 after:left-0 after:h-full after:w-full after:rounded-full after:border-2 after:border-instrasigent-sea-500 after:content-['']":
+                    "after:absolute after:top-0 after:left-0 after:z-[-1] after:h-full after:w-full after:rounded-full after:bg-autumn-500 after:content-['']":
                       isToday && !selected,
 
                     // Range styling
