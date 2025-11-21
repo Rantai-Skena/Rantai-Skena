@@ -26,7 +26,14 @@ export default function DashboardPage() {
   }, [isPending, session?.user, router]);
 
   if (isPending) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
   }
   if (!session?.user) {
     console.log("No session user, redirecting to /login");

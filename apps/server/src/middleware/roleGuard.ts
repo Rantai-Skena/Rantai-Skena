@@ -33,7 +33,13 @@ export const roleGuard = (
     }
 
     if (!currentUser.role) {
-      return c.redirect("/register/role");
+      return c.json(
+        {
+          success: false,
+          error: "Role not set. Please complete onboarding.",
+        },
+        403,
+      );
     }
 
     if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
