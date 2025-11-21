@@ -1,7 +1,11 @@
 import Calendar from "./calendar";
 import { Card } from "./ui/card";
 
-export default function Schedule() {
+interface ScheduleProps {
+  variant: "agent" | "artist"
+}
+
+export default function Schedule({ variant }: ScheduleProps) {
   const hours = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",];
 
   const scedules = [{
@@ -47,7 +51,7 @@ export default function Schedule() {
         </div>
       </div>
       <div>
-        <Calendar availableRanges={scedules} />
+        <Calendar availableRanges={scedules} variant={variant} />
       </div>
     </div>
   );

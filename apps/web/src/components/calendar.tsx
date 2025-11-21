@@ -18,6 +18,7 @@ interface CalendarProps {
   onRangeSelect?: (range: DateRange | null) => void;
   selectedRange?: DateRange | null;
   className?: string;
+  variant: "agent" | "artist"
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -25,8 +26,11 @@ const Calendar: React.FC<CalendarProps> = ({
   onRangeSelect,
   selectedRange,
   className,
+  variant
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  const rangeColorClass = variant === "artist" ? "purple-500" : "fuchsia-500";
 
   const defaultAvailableRanges: DateRange[] = [
     {
@@ -185,7 +189,13 @@ const Calendar: React.FC<CalendarProps> = ({
         )}
       >
         {/* Header */}
-        <div className="flex w-full cursor-default justify-between rounded-xl border border-[#ffffff59] bg-autumn-500 px-2 py-2 font-semibold text-base">
+        <div className="flex w-full cursor-default justify-between rounded-xl border border-[#ffffff59] bg-autumn-500 px-2 py-2 font-semibold text-base"
+          style={{
+            background:
+              variant === "artist"
+                ? "linear-gradient(100deg, #1f9aff 0%, #cd00e9 100%)" // Jika variant adalah "artist"
+                : "linear-gradient(100deg, #ff4e86 0%, #cd00e9 100%)", // Jika variant BUKAN "artist" (misalnya "agent")
+          }}>
           <button className="cursor-pointer" onClick={goToPreviousMonth}>
             <ChevronLeft />
           </button>
@@ -222,19 +232,21 @@ const Calendar: React.FC<CalendarProps> = ({
                 disabled={!status.inRange || !status.range?.available}
                 className={cn(
                   "relative h-8 w-full text-center font-bold text-base transition-all duration-200",
-                  { 
+                  {
                     "z-20 text-white": isCurrentMonth,
-                    "z-20 text-neutral-900": !isCurrentMonth,  
+                    "z-20 text-neutral-900": !isCurrentMonth,
 
-                    "after:absolute after:top-0 after:left-0 after:z-[-1] after:h-full after:w-full after:rounded-full after:bg-autumn-500 after:content-['']":
-                      isToday && !selected,
+                    [`after:absolute after:top-0 after:left-0 after:z-[-1] after:h-full after:w-full after:rounded-full after:content-[''] ${variant === "artist"
+                        ? "after:bg-gradient-artist"  
+                        : "after:bg-gradient-agent"    
+                      }`]: isToday && !selected,
 
-                    // Range styling
-                    "rounded-l-full border-autumn-500 border-y-2 border-l-2":
+                    // Range styling 
+                    [`rounded-l-full border-${rangeColorClass} border-y-2 border-l-2`]:
                       status.isStart && status.inRange,
-                    "rounded-r-full border-autumn-500 border-y-2 border-r-2":
+                    [`rounded-r-full border-${rangeColorClass} border-y-2 border-r-2`]:
                       status.isEnd && status.inRange,
-                    "border-autumn-500 border-y-2":
+                    [`border-${rangeColorClass} border-y-2`]:
                       !status.isStart && status.inRange && !status.isEnd,
 
                     // Disabled styling
