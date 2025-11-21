@@ -386,3 +386,35 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .border-gradient-agent {
+    border: 1px solid transparent;
+    background-image:
+      linear-gradient(#000, #000), linear-gradient(to right, #ff4e86, #cd00e9);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .border-gradient-artist {
+    border: 1px solid transparent;
+    background-image:
+      linear-gradient(#000, #000), linear-gradient(to right, #1f9aff, #cd00e9);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* IE and Edge */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+  }
+
+  /* Firefox */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+}

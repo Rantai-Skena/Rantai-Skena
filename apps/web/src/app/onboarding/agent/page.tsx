@@ -15,39 +15,46 @@ import { authClient } from "@/lib/auth-client";
 
 export default function OnboardingAgent() {
   const steps = [{ title: "" }, { title: "" }, { title: "" }];
-  const [currentStep, setCurrentStep] = useState(2);
+  const [currentStep, setCurrentStep] = useState(0);
+  const genres = [
+    "Pop",
+    "Indie",
+    "Hardcore",
+    "Emo",
+    "Rock",
+    "Jazz",
+    "R&B",
+    "HipHop",
+    "Punk",
+    "Metalcore",
+    "EDM",
+  ];
 
   const router = useRouter();
   const { isPending } = authClient.useSession();
 
+  const nextPage = () => {
+    setCurrentStep((prev) => prev + 1);
+  };
+
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
       name: "",
+      location: "",
+      bio: "",
+      genre: [] as string[],
+      instagram: "",
+      email: "",
     },
-    onSubmit: async ({ value }) => {
-      await authClient.signUp.email(
-        {
-          email: value.email,
-          password: value.password,
-          name: value.name,
-        },
-        {
-          onSuccess: () => {
-            setCurrentStep(1);
-          },
-          onError: (error) => {
-            console.error(error.error.message || error.error.statusText);
-          },
-        },
-      );
-    },
+    onSubmit: async ({ value }) => { },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
+        name: z.string().min(1, "Name must be at least 1 characters"),
+        location: z.string(),
+        bio: z.string(),
+        genre: z.array(z.string()).min(1, "Pick at least 1 genre"),
+        instagram: z.string(),
         email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
   });
@@ -58,22 +65,34 @@ export default function OnboardingAgent() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="-z-10 absolute top-0 left-0 h-1/2 min-w-screen bg-linear-to-r from-autumn-500 via-lavender-500 to-sky-500 opacity-30 blur-3xl" />
-      <Link href="/" className="contents">
+      <div
+        className="contents hover:cursor-pointer"
+        onClick={() => {
+          currentStep > 0
+            ? setCurrentStep((prev) => prev - 1)
+            : (window.location.href = "/onboarding");
+        }}
+      >
         <ArrowLeftIcon size={28} />
-      </Link>
+      </div>
       <div className="flex w-full flex-col items-center justify-center">
         <div className="flex w-full justify-center px-20">
           <Stepper steps={steps} currentStep={currentStep} />
         </div>
         <div className="mt-10">
           <div className="grid w-full grid-cols-2 gap-15">
-            <div className="flex grow flex-col items-center">
+            <div className="flex grow flex-col items-center gap-10">
               <div className="flex flex-col items-start">
-                <h1 className="text-h1 text-white">Tell us about your</h1>
+                <h1 className="text-h3 text-white">Tell us about your</h1>
                 <h1 className="inline-flex bg-gradient-agent bg-clip-text text-h1 text-transparent">
                   Agency
                 </h1>
               </div>
+              <img
+                src="/agent.png"
+                alt="agent"
+                className="h-60 w-auto object-cover"
+              />
             </div>
             {currentStep === 0 && (
               <Card className="flex w-full max-w-md grow rounded-lg border p-6">
@@ -121,7 +140,7 @@ export default function OnboardingAgent() {
                   </div>
 
                   <div>
-                    <form.Field name="email">
+                    <form.Field name="location">
                       {(field) => (
                         <div className="space-y-2">
                           <Label htmlFor={field.name}>City/Base location</Label>
@@ -130,7 +149,7 @@ export default function OnboardingAgent() {
                             name={field.name}
                             onBlur={field.handleBlur}
                             onChange={(e) => field.handleChange(e.target.value)}
-                            type="email"
+                            type="text"
                             value={field.state.value}
                             placeholder="Enter your city"
                           />
@@ -145,7 +164,7 @@ export default function OnboardingAgent() {
                   </div>
 
                   <div>
-                    <form.Field name="password">
+                    <form.Field name="bio">
                       {(field) => (
                         <div className="space-y-2">
                           <Label htmlFor={field.name}>Bio</Label>
@@ -173,10 +192,10 @@ export default function OnboardingAgent() {
                       <Button
                         className="w-full"
                         disabled={!state.canSubmit || state.isSubmitting}
-                        type="submit"
                         variant="destructive"
+                        onClick={nextPage}
                       >
-                        {state.isSubmitting ? "Submitting..." : "Next"}
+                        {state.isSubmitting ? "Loading..." : "Next"}
                       </Button>
                     )}
                   </form.Subscribe>
@@ -184,7 +203,7 @@ export default function OnboardingAgent() {
               </Card>
             )}
             {currentStep === 1 && (
-              <Card className="flex w-full max-w-md grow rounded-lg border p-6">
+              <Card className="flex h-fit w-full max-w-md rounded-lg border p-6">
                 <div className="flex flex-col items-center justify-center">
                   <h1 className="mb-6 text-center font-bold text-3xl">
                     Genre & Music Style
@@ -203,23 +222,44 @@ export default function OnboardingAgent() {
                   }}
                 >
                   <div>
-                    <form.Field name="name">
+                    <form.Field name="genre">
                       {(field) => (
-                        <div className="space-y-2">
-                          <Label htmlFor={field.name}>Band Name</Label>
-                          <Input
-                            id={field.name}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            value={field.state.value}
-                            placeholder="Enter your band name"
-                          />
-                          {field.state.meta.errors.map((error) => (
-                            <p className="text-red-500" key={error?.message}>
-                              {error?.message}
-                            </p>
-                          ))}
+                        <div className="mb-8 flex flex-wrap justify-center gap-2">
+                          {genres.map((g) => {
+                            const selected = field.state.value.includes(g);
+
+                            return (
+                              <button
+                                key={g}
+                                type="button"
+                                onClick={() => {
+                                  if (selected) {
+                                    field.handleChange(
+                                      field.state.value.filter((v) => v !== g),
+                                    );
+                                  } else {
+                                    field.handleChange([
+                                      ...field.state.value,
+                                      g,
+                                    ]);
+                                  }
+                                }}
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
+                                    ? "border-fuchsia-500"
+                                    : "border-white/40 bg-transparent hover:bg-white/10"
+                                  }`}
+                              >
+                                <span
+                                  className={`${selected
+                                      ? "bg-gradient-agent bg-clip-text text-transparent"
+                                      : "text-white"
+                                    }`}
+                                >
+                                  {g}
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
                       )}
                     </form.Field>
@@ -230,10 +270,10 @@ export default function OnboardingAgent() {
                       <Button
                         className="w-full"
                         disabled={!state.canSubmit || state.isSubmitting}
-                        type="submit"
                         variant="destructive"
+                        onClick={nextPage}
                       >
-                        {state.isSubmitting ? "Submitting..." : "Next"}
+                        {state.isSubmitting ? "Loading..." : "Next"}
                       </Button>
                     )}
                   </form.Subscribe>
@@ -241,7 +281,7 @@ export default function OnboardingAgent() {
               </Card>
             )}
             {currentStep === 2 && (
-              <Card className="flex w-full max-w-md grow rounded-lg border p-6">
+              <Card className="flex h-fit w-full max-w-md rounded-lg border p-6">
                 <div className="flex flex-col items-center justify-center">
                   <h1 className="mb-6 text-center font-bold text-3xl">
                     Contacts
@@ -261,7 +301,7 @@ export default function OnboardingAgent() {
                   }}
                 >
                   <div>
-                    <form.Field name="name">
+                    <form.Field name="instagram">
                       {(field) => (
                         <div className="space-y-2">
                           <Label htmlFor={field.name}>Instagram</Label>

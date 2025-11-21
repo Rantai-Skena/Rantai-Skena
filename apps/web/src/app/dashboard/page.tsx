@@ -4,7 +4,8 @@ import { useEffect } from "react";
 // import { headers } from "next/headers";
 import { authClient } from "@/lib/auth-client";
 // import { redirect } from "next/navigation";
-import Dashboard from "./dashboard";
+import DashboardArtist from "./dashboard-artist";
+import DashboardAgent from "./dashboard-agent";
 export default function DashboardPage() {
   // const session = await authClient.getSession({
   // 	fetchOptions: {
@@ -46,11 +47,10 @@ export default function DashboardPage() {
     console.log("Rendering dashboard for user:", session.user.name);
   }
 
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session?.user.name}</p>
-      <Dashboard session={session} />
-    </div>
-  );
+  // TODO: ganti role
+  if (session?.user.name !== "ananda") {
+    return <DashboardArtist session={session} />
+  }
+
+  return <DashboardAgent session={session} />
 }

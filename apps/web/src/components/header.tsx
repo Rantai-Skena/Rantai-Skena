@@ -1,9 +1,10 @@
 "use client";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const menuItems = [{ name: "", href: "" }];
@@ -15,16 +16,31 @@ const artistMenus = [
 ];
 
 const agentMenus = [
-  { name: "Home", href: "#link" },
   { name: "Dashboard", href: "#link" },
   { name: "Explore Artists", href: "#link" },
 ];
 
 export const HeroHeader = () => {
-  const [menuState, setMenuState] = React.useState(false);
-  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [menuState, setMenuState] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [menuItems, setMenuItems] = useState<{ name: string; href: string }[]>(
+    [],
+  );
 
-  React.useEffect(() => {
+  const { data: session, isPending } = authClient.useSession();
+
+  // Tentukan menu berdasarkan role user
+  useEffect(() => {
+    if (isPending) return;
+
+    const role = session?.user?.name;
+
+    if (role === "artist") setMenuItems(artistMenus);
+    else if (role === "agent") setMenuItems(agentMenus);
+    else setMenuItems([]);
+  }, [session, isPending]);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -41,7 +57,7 @@ export const HeroHeader = () => {
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "max-w-4xl rounded-2xl border bg-background/60 shadow-md backdrop-blur-lg lg:px-5",
+            "max-w-4xl rounded-2xl border bg-background/60 shadow-md backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -95,13 +111,17 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button asChild size="sm" variant="destructive">
+                {session?.user ? (
+                  <Button asChild size="sm" variant="outline">
+                    <span className="px-3">Logout</span>
+                  </Button>
+                ) : (
                   <Link href="/login">
                     <span className="px-3 py-1 font-bold tracking-wider">
                       Login
                     </span>
                   </Link>
-                </Button>
+                )}
               </div>
             </div>
           </div>
