@@ -36,4 +36,24 @@ router.put("/role", async (c) => {
   return c.json({ success: true, data: updated });
 });
 
+router.get("/role", async (c) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+  if (!session) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const found = await db
+    .select()
+    .from(user)
+    .where(eq(user.id, session.user.id))
+    .limit(1);
+
+  if (found.length === 0) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ success: true, data: found[0] });
+});
+
 export default router;

@@ -10,9 +10,8 @@ import applicationArtistRoutes from "./routes/application/application.artist";
 import applicationStatusRoutes from "./routes/application/application.status";
 import artistProfileRoutes from "./routes/artist/profile";
 import authRoleRoutes from "./routes/auth/role";
-import eventDetailRoutes from "./routes/event/event.detail";
-import eventListRoutes from "./routes/event/event.list";
-import eventRoutes from "./routes/event/event.manage";
+import agentEventRoutes from "./routes/event/agent-events";
+import eventRoutes from "./routes/event/index";
 import galleryRoutes from "./routes/gallery/gallery";
 import musicRoutes from "./routes/music/music";
 
@@ -29,15 +28,14 @@ app.use(
   }),
 );
 
-app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 app.route("/api/auth", authRoleRoutes);
+app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/artist", artistProfileRoutes);
 app.route("/api/agent", agentProfileRoutes);
 
 app.route("/api/events", eventRoutes);
-app.route("/api/events", eventListRoutes);
-app.route("/api/events", eventDetailRoutes);
+app.route("/api/agent/events", agentEventRoutes);
 
 app.route("/api/applications", applicationArtistRoutes);
 app.route("/api/applications", applicationStatusRoutes);

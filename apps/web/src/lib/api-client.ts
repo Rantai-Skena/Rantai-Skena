@@ -67,3 +67,12 @@ export async function apiPatch<T, B = unknown>(
 
   return handleResponse<T>(res);
 }
+
+export async function apiDelete<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  return handleResponse<T>(res);
+}

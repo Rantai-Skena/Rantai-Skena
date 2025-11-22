@@ -8,6 +8,18 @@ import { getCurrentUser } from "../../utils/getCurrentUser";
 
 const router = new Hono();
 
+// Agent-only list
+router.get("/", roleGuard(["agent"]), async (c) => {
+  const user = getCurrentUser(c);
+
+  const events = await db
+    .select()
+    .from(event)
+    .where(eq(event.agentId, user.id));
+
+  return c.json({ success: true, data: events });
+});
+
 // Create event
 router.post("/", roleGuard(["agent"]), async (c) => {
   const user = getCurrentUser(c);

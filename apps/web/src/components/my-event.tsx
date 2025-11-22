@@ -1,4 +1,3 @@
-// apps/web/src/components/my-event.tsx
 "use client";
 
 import { format } from "date-fns";
@@ -10,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api-client";
 
 type EventRow = {
   id: string;
@@ -34,29 +34,23 @@ type ApplicationRow = {
   artistEmail: string | null;
 };
 
-type ApiResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: string;
-};
-
 const statusLabel: Record<ApplicationRow["status"], string> = {
   pending: "Pending",
   approved: "Approved",
   rejected: "Rejected",
   completed: "Completed",
-};
+} as const;
 
 const statusColor: Record<ApplicationRow["status"], string> = {
   pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
   approved: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   rejected: "bg-red-500/10 text-red-500 border-red-500/20",
   completed: "bg-sky-500/10 text-sky-500 border-sky-500/20",
-};
+} as const;
 
 export default function MyEvent() {
   const [events, setEvents] = useState<EventRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [loadingApplicationsFor, setLoadingApplicationsFor] = useState<
     string | null
   >(null);
@@ -65,8 +59,8 @@ export default function MyEvent() {
   >({});
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
 
-  const [creating, setCreating] = useState(false);
-  const [creatingLoading, setCreatingLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isCreatingLoading, setIsCreatingLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -81,26 +75,20 @@ export default function MyEvent() {
     void fetchEvents();
   }, []);
 
-  async function fetchEvents() {
+  const fetchEvents = async (): Promise<void> => {
     try {
-      setLoading(true);
-      const res = await fetch("/api/events", {
-        credentials: "include",
-      });
-      const json = (await res.json()) as ApiResponse<EventRow[]>;
-      if (!json.success || !json.data) {
-        throw new Error(json.error || "Failed to load events");
-      }
-      setEvents(json.data);
-    } catch (err) {
-      console.error(err);
+      setIsLoading(true);
+      const data = await apiGet<EventRow[]>("/agent/events");
+      setEvents(data);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
       toast.error("Gagal mengambil daftar event");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  }
+  };
 
-  async function fetchApplications(eventId: string) {
+  const fetchApplications = async (eventId: string): Promise<void> => {
     // kalau sudah pernah di-load, cukup toggle expand aja
     if (applicationsByEvent[eventId]) {
       setExpandedEventId((prev) => (prev === eventId ? null : eventId));
@@ -109,27 +97,23 @@ export default function MyEvent() {
 
     try {
       setLoadingApplicationsFor(eventId);
-      const res = await fetch(`/api/events/${eventId}/applications`, {
-        credentials: "include",
-      });
-      const json = (await res.json()) as ApiResponse<ApplicationRow[]>;
-      if (!json.success || !json.data) {
-        throw new Error(json.error || "Failed to load applications");
-      }
+      const data = await apiGet<ApplicationRow[]>(
+        `/agent/events/${eventId}/applications`,
+      );
       setApplicationsByEvent((prev) => ({
         ...prev,
-        [eventId]: json.data!,
+        [eventId]: data,
       }));
       setExpandedEventId(eventId);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to fetch applications:", error);
       toast.error("Gagal mengambil applications untuk event ini");
     } finally {
       setLoadingApplicationsFor(null);
     }
-  }
+  };
 
-  async function handleCreateEvent(e: React.FormEvent) {
+  const handleCreateEvent = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!form.name || !form.location || !form.startsAt) {
       toast.error("Nama event, lokasi, dan tanggal mulai wajib diisi");
@@ -137,8 +121,8 @@ export default function MyEvent() {
     }
 
     try {
-      setCreatingLoading(true);
-      const body: any = {
+      setIsCreatingLoading(true);
+      const body: Record<string, unknown> = {
         name: form.name,
         location: form.location,
         startsAt: form.startsAt,
@@ -149,23 +133,16 @@ export default function MyEvent() {
             .map((g) => g.trim())
             .filter(Boolean) || null,
       };
-      if (form.endsAt) body.endsAt = form.endsAt;
-
-      const res = await fetch("/api/events/manage", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const json = (await res.json()) as ApiResponse<EventRow>;
-      if (!res.ok || !json.success || !json.data) {
-        throw new Error(json.error || "Failed to create event");
+      if (form.endsAt) {
+        body.endsAt = form.endsAt;
       }
 
-      setEvents((prev) => [json.data!, ...prev]);
+      const newEvent = await apiPost<EventRow, Record<string, unknown>>(
+        "/agent/events",
+        body,
+      );
+
+      setEvents((prev) => [newEvent, ...prev]);
       toast.success("Event berhasil dibuat");
 
       setForm({
@@ -176,42 +153,33 @@ export default function MyEvent() {
         genres: "",
         description: "",
       });
-      setCreating(false);
-    } catch (err) {
-      console.error(err);
+      setIsCreating(false);
+    } catch (error) {
+      console.error("Failed to create event:", error);
       toast.error("Gagal membuat event");
     } finally {
-      setCreatingLoading(false);
+      setIsCreatingLoading(false);
     }
-  }
+  };
 
-  async function handleDeleteEvent(id: string) {
+  const handleDeleteEvent = async (id: string): Promise<void> => {
     if (!confirm("Yakin ingin menghapus event ini?")) return;
 
     try {
-      const res = await fetch(`/api/events/manage/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      const json = (await res.json().catch(() => ({}))) as ApiResponse<null>;
-      if (!res.ok || (json.success === false && json.error)) {
-        throw new Error(json.error || "Failed to delete event");
-      }
-
+      await apiDelete(`/agent/events/${id}`);
       setEvents((prev) => prev.filter((e) => e.id !== id));
       toast.success("Event berhasil dihapus");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
       toast.error("Gagal menghapus event");
     }
-  }
+  };
 
-  async function handleUpdateApplicationStatus(
+  const handleUpdateApplicationStatus = async (
     eventId: string,
     appId: string,
     status: ApplicationRow["status"],
-  ) {
+  ): Promise<void> => {
     const current = applicationsByEvent[eventId];
     if (!current) return;
 
@@ -226,23 +194,14 @@ export default function MyEvent() {
     }));
 
     try {
-      const res = await fetch(`/api/application/${appId}/status`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      const json = (await res.json()) as ApiResponse<ApplicationRow>;
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || "Failed to update status");
-      }
+      await apiPatch<ApplicationRow, { status: ApplicationRow["status"] }>(
+        `/agent/applications/${appId}/status`,
+        { status },
+      );
 
       toast.success("Status application diperbarui");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to update application status:", error);
       // rollback
       setApplicationsByEvent((prev) => ({
         ...prev,
@@ -250,7 +209,7 @@ export default function MyEvent() {
       }));
       toast.error("Gagal mengubah status application");
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -263,13 +222,13 @@ export default function MyEvent() {
             masuk.
           </p>
         </div>
-        <Button variant="destructive" onClick={() => setCreating((v) => !v)}>
-          {creating ? "Tutup form" : "Buat event baru"}
+        <Button variant="destructive" onClick={() => setIsCreating((v) => !v)}>
+          {isCreating ? "Tutup form" : "Buat event baru"}
         </Button>
       </div>
 
       {/* Form create event */}
-      {creating && (
+      {isCreating && (
         <Card className="border p-4 sm:p-6">
           <form
             className="grid gap-4 md:grid-cols-2"
@@ -352,7 +311,7 @@ export default function MyEvent() {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  setCreating(false);
+                  setIsCreating(false);
                   setForm({
                     name: "",
                     location: "",
@@ -368,9 +327,9 @@ export default function MyEvent() {
               <Button
                 type="submit"
                 variant="destructive"
-                disabled={creatingLoading}
+                disabled={isCreatingLoading}
               >
-                {creatingLoading ? "Menyimpan..." : "Simpan event"}
+                {isCreatingLoading ? "Menyimpan..." : "Simpan event"}
               </Button>
             </div>
           </form>
@@ -378,7 +337,7 @@ export default function MyEvent() {
       )}
 
       {/* List events */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <Card className="border p-4" key={i}>
@@ -502,7 +461,7 @@ export default function MyEvent() {
                               </Badge>
                             </div>
                             {app.message && (
-                              <p className="mb-2 text-xs">“{app.message}”</p>
+                              <p className="mb-2 text-xs">"{app.message}"</p>
                             )}
 
                             <div className="flex flex-wrap items-center gap-2">
