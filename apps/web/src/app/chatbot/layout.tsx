@@ -5,10 +5,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      {/* <Header /> */}
+    <div className="max-h-screen overflow-hidden">
       <HeroHeader />
       {children}
-    </>
+    </div>
   );
 }

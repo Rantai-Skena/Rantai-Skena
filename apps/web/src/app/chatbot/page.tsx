@@ -14,6 +14,7 @@ import {
 import { MarkdownTextPrimitive } from "@assistant-ui/react-markdown";
 import { Plus } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { MarkdownText } from "@/components/markdown-text";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 
@@ -141,12 +142,8 @@ async function callChatBackendStreaming(
  */
 const TextPart: TextMessagePartComponent = () => {
   return (
-    <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-      {/* kalau mau markdown support (codeblock, list, dll) */}
-      <MarkdownTextPrimitive />
-      {/* atau kalau mau plain text:
-          <MessagePartPrimitive.Text />
-      */}
+    <div className="[&_.aui-md]:!max-h-none break-words text-foreground leading-relaxed [&_.aui-md_pre]:max-w-full [&_.aui-md_pre]:overflow-x-auto [&_.aui-md_table]:block [&_.aui-md_table]:overflow-x-auto">
+      <MarkdownText />
     </div>
   );
 };
@@ -393,7 +390,7 @@ export default function ChatbotPage() {
 
   return (
     // pt-20 supaya gak ketiban HeroHeader yang fixed
-    <div className="flex h-screen w-full bg-gradient-to-br from-background via-background to-muted/30 pt-20">
+    <div className="flex h-screen w-full overflow-hidden bg-gradient-to-br from-background via-background to-muted/30 pt-20">
       <Sidebar
         threads={threads}
         currentThreadId={currentThreadId}
