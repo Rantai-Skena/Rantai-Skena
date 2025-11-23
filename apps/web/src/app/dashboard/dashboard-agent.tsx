@@ -8,6 +8,7 @@ import { HeroHeader } from "../../components/header";
 import MyApplication from "../../components/my-application";
 import MyMusic from "../../components/my-music";
 import Schedule from "../../components/schedule";
+import EventDetail from "@/components/event-detail";
 
 export default function DashboardAgent({
   session,
@@ -52,7 +53,8 @@ export default function DashboardAgent({
 
         <main className="flex min-h-screen grow overflow-y-auto bg-card p-6">
           {activeTab === "My Event" && <MyEvent />}
-          {activeTab === "My Schedule" && <Schedule />}
+          {/* {activeTab === "My Event" && <EventDetail />} */}
+          {activeTab === "My Schedule" && <Schedule variant="agent" />}
         </main>
       </div>
     </>

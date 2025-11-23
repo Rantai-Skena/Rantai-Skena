@@ -1,7 +1,11 @@
 import Calendar from "./calendar";
 import { Card } from "./ui/card";
 
-export default function Schedule() {
+interface ScheduleProps {
+  variant?: "agent" | "artist";
+}
+
+export default function Schedule({ variant = "artist" }: ScheduleProps) {
   const hours = [
     "00",
     "01",
@@ -29,7 +33,7 @@ export default function Schedule() {
     "23",
   ];
 
-  const scedules = [
+  const schedules = [
     {
       start: new Date(2025, 6, 6),
       end: new Date(2025, 6, 13),
@@ -63,7 +67,7 @@ export default function Schedule() {
           Today Performance
         </h3>
         <div className="scrollbar-hidden flex grow flex-col gap-10 overflow-y-auto pr-2">
-          {hours.map((hour, idx) => (
+          {hours.map((hour) => (
             <div key={hour} className="flex items-center">
               <span className="w-12 shrink-0 text-left font-medium text-gray-400 text-sm">
                 {hour}.00
@@ -74,7 +78,7 @@ export default function Schedule() {
         </div>
       </div>
       <div>
-        <Calendar availableRanges={scedules} />
+        <Calendar availableRanges={schedules} variant={variant} />
       </div>
     </div>
   );
