@@ -21,7 +21,8 @@
     "db:generate": "turbo -F @rantai-skena/db db:generate",
     "db:migrate": "turbo -F @rantai-skena/db db:migrate",
     "format": "ultracite fix",
-    "lint": "ultracite check"
+    "lint": "ultracite check",
+    "db:seed:events": "pnpm --filter @rantai-skena/db seed:events"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
