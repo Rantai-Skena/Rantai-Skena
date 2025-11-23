@@ -5,7 +5,7 @@ import {
   music,
 } from "@rantai-skena/db/schema/app";
 import { user } from "@rantai-skena/db/schema/auth";
-import { and, eq, ilike, inArray } from "drizzle-orm";
+import { and, eq, ilike, or } from "drizzle-orm";
 import { Hono } from "hono";
 
 const router = new Hono();
@@ -39,26 +39,30 @@ router.get("/", async (c) => {
   const whereClauses = [eq(user.role, "artist")];
 
   if (q) {
-    whereClauses.push(ilike(artistProfile.stageName, `%${q}%`));
+    const searchCondition = or(
+      ilike(artistProfile.stageName, `%${q}%`),
+      ilike(user.name, `%${q}%`),
+    );
+    if (searchCondition) {
+      whereClauses.push(searchCondition);
+    }
   }
 
   if (city) {
     whereClauses.push(eq(artistProfile.city, city));
   }
 
-  // NOTE: kalau genre di DB berupa string csv, filter genre akan dilakukan in-memory
-  // setelah query (lebih aman tanpa tahu tipe kolom).
   const rows = await db
     .select({
-      id: artistProfile.userId,
+      id: user.id,
       stageName: artistProfile.stageName,
       city: artistProfile.city,
       genre: artistProfile.genre,
       image: user.image,
       name: user.name,
     })
-    .from(artistProfile)
-    .innerJoin(user, eq(artistProfile.userId, user.id))
+    .from(user)
+    .leftJoin(artistProfile, eq(artistProfile.userId, user.id))
     .where(and(...whereClauses));
 
   const mapped = rows
