@@ -11,6 +11,7 @@ import applicationStatusRoutes from "./routes/application/application.status";
 import artistProfileRoutes from "./routes/artist/profile";
 import artistPublicRoutes from "./routes/artist/public";
 import authRoleRoutes from "./routes/auth/role";
+import chatRoutes from "./routes/chat/chat";
 import agentEventRoutes from "./routes/event/agent-events";
 import eventRoutes from "./routes/event/index";
 import galleryRoutes from "./routes/gallery/gallery";
@@ -45,6 +46,8 @@ app.route("/api/events", applicationAgentRoutes);
 
 app.route("/api/music", musicRoutes);
 app.route("/api/gallery", galleryRoutes);
+
+app.route("/api/chat", chatRoutes);
 
 app.get("/", (c) => c.text("OK"));
 
