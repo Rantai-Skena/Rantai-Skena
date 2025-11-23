@@ -1,9 +1,16 @@
 "use client";
-import { Menu, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, User, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +40,7 @@ export const HeroHeader = () => {
     await authClient.signOut();
     window.location.href = "/login";
   };
-  // Tentukan menu berdasarkan role user
+
   useEffect(() => {
     if (isPending) return;
 
@@ -51,6 +58,8 @@ export const HeroHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+
   return (
     <header>
       <nav
@@ -116,15 +125,34 @@ export const HeroHeader = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 {session?.user ? (
-                  <Button
-                    asChild
-                    size="sm"
-                    variant="outline"
-                    onClick={logout}
-                    className="hover:cursor-pointer hover:bg-red-600"
-                  >
-                    <span className="px-3">Logout</span>
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover:cursor-pointer"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard" className="flex items-center">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={logout}
+                        className="text-red-600 hover:text-red-700 focus:text-red-700"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ) : (
                   <Link href="/login">
                     <span className="px-3 py-1 font-bold tracking-wider">
