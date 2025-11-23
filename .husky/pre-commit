@@ -1,69 +1,81 @@
-
 #!/bin/sh
-# Exit on any error
 set -e
 
-# Check if there are any staged files
+# No staged files -> nothing to do
 if [ -z "$(git diff --cached --name-only)" ]; then
   echo "No staged files to format"
   exit 0
 fi
 
-# Store the hash of staged changes to detect modifications
+# Hash staged diff before formatting (for info message)
 STAGED_HASH=$(git diff --cached | sha256sum | cut -d' ' -f1)
 
-# Save list of staged files (handling all file states)
+# List staged files we care about
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
-PARTIALLY_STAGED=$(git diff --name-only)
 
-# Stash unstaged changes to preserve working directory
-# --keep-index keeps staged changes in working tree
-git stash push --quiet --keep-index --message "pre-commit-stash" || true
-STASHED=$?
+# Create a unique stash name so we only pop what we created
+STASH_NAME="pre-commit-stash-$(date +%s)"
 
-# Run formatter on the staged files
-pnpm dlx ultracite fix
-FORMAT_EXIT_CODE=$?
+# Stash unstaged + untracked changes, keep index (staged changes stay)
+set +e
+git stash push -u -k -q -m "$STASH_NAME"
+set -e
 
-# Restore working directory state
-if [ $STASHED -eq 0 ]; then
-  # Re-stage the formatted files
-  if [ -n "$STAGED_FILES" ]; then
-    echo "$STAGED_FILES" | while IFS= read -r file; do
-      if [ -f "$file" ]; then
-        git add "$file"
-      fi
-    done
-  fi
-  
-  # Restore unstaged changes
-  git stash pop --quiet || true
-  
-  # Restore partial staging if files were partially staged
-  if [ -n "$PARTIALLY_STAGED" ]; then
-    for file in $PARTIALLY_STAGED; do
-      if [ -f "$file" ] && echo "$STAGED_FILES" | grep -q "^$file$"; then
-        # File was partially staged - need to unstage the unstaged parts
-        git restore --staged "$file" 2>/dev/null || true
-        git add -p "$file" < /dev/null 2>/dev/null || git add "$file"
-      fi
-    done
-  fi
-else
-  # No stash was created, just re-add the formatted files
-  if [ -n "$STAGED_FILES" ]; then
-    echo "$STAGED_FILES" | while IFS= read -r file; do
-      if [ -f "$file" ]; then
-        git add "$file"
-      fi
-    done
-  fi
+# Detect whether stash was actually created
+STASH_CREATED=0
+if git stash list | grep -q "$STASH_NAME"; then
+  STASH_CREATED=1
 fi
 
-# Check if staged files actually changed
+# Run formatter (capture exit code, don't let set -e kill the script)
+set +e
+pnpm dlx ultracite fix
+FORMAT_EXIT_CODE=$?
+set -e
+
+# If formatter failed: revert formatter changes for staged files,
+# then restore unstaged changes from OUR stash, and exit non-zero.
+if [ $FORMAT_EXIT_CODE -ne 0 ]; then
+  echo "❌ Ultracite failed. Restoring your working tree..."
+
+  if [ -n "$STAGED_FILES" ]; then
+    printf '%s\n' "$STAGED_FILES" | while IFS= read -r file; do
+      if [ -f "$file" ]; then
+        # Restore working tree from index (undo formatter edits, keep staged state)
+        git restore --worktree "$file"
+      fi
+    done
+  fi
+
+  if [ $STASH_CREATED -eq 1 ]; then
+    git stash pop -q || true
+  fi
+
+  exit $FORMAT_EXIT_CODE
+fi
+
+# Formatter success -> stage formatted versions of staged files
+if [ -n "$STAGED_FILES" ]; then
+  printf '%s\n' "$STAGED_FILES" | while IFS= read -r file; do
+    if [ -f "$file" ]; then
+      git add "$file"
+    fi
+  done
+fi
+
+# Restore unstaged changes (only if we created a stash)
+if [ $STASH_CREATED -eq 1 ]; then
+  git stash pop -q || {
+    echo "⚠️  Could not automatically re-apply unstaged changes."
+    echo "They are still in your stash:"
+    git stash list | head -n 1
+  }
+fi
+
+# Inform if staged content changed by formatting
 NEW_STAGED_HASH=$(git diff --cached | sha256sum | cut -d' ' -f1)
 if [ "$STAGED_HASH" != "$NEW_STAGED_HASH" ]; then
   echo "✨ Files formatted by Ultracite"
 fi
 
-exit $FORMAT_EXIT_CODE
+exit 0
