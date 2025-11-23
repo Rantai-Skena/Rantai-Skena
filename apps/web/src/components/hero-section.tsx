@@ -163,7 +163,7 @@ export default function HeroSection() {
                   </div>
                   <div className="md:pr-1.5 lg:pr-0">
                     <Button size="sm" variant="outline">
-                      <Link href="/onboarding/artist" className="px-2">
+                      <Link href="/explore-gigs" className="px-2">
                         Explore gigs
                       </Link>
                     </Button>

@@ -5,8 +5,9 @@ import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
 
 const NAVIGATION_LINKS = [
-  { label: "The Blueprint", href: "/how-it-works" },
+  { label: "The Blueprint", href: "#why-section" },
   { label: "Start Your Run", href: "/login" },
+  { label: "Chatbot", href: "/chatbot" },
 ] as const;
 
 const STATS = [

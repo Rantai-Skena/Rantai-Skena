@@ -11,15 +11,33 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { apiGet } from "@/lib/api-client";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-const menuItems = [{ name: "", href: "" }];
+type Role = "artist" | "agent" | "public";
+
+const menus: Record<Role, { name: string; href: string }[]> = {
+  public: [
+    { name: "Explore gigs", href: "/explore-gigs" },
+    { name: "Chatbot", href: "/chatbot" },
+  ],
+  artist: [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Explore gigs", href: "/explore-gigs" },
+    { name: "Chatbot", href: "/chatbot" },
+  ],
+  agent: [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Manage events", href: "/dashboard" },
+    { name: "Chatbot", href: "/chatbot" },
+  ],
+};
 
 const artistMenus = [
-  { name: "Dashboard", href: "#link" },
-  { name: "Explore Gigs", href: "#link" },
-  { name: "Chatbot", href: "#link" },
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Explore Gigs", href: "/explore-gigs" },
+  { name: "Chatbot", href: "/chatbot" },
 ];
 
 const agentMenus = [
@@ -33,6 +51,9 @@ export const HeroHeader = () => {
   const [menuItems, setMenuItems] = useState<{ name: string; href: string }[]>(
     [],
   );
+  // const [menuItems, setMenuItems] = useState<{ name: string; href: string }[]>(
+  // [],
+  // );
 
   const { data: session, isPending } = authClient.useSession();
 
@@ -44,11 +65,31 @@ export const HeroHeader = () => {
   useEffect(() => {
     if (isPending) return;
 
-    const role = session?.user?.name;
+    if (!session?.user) {
+      setMenuItems(menus.public);
+      return;
+    }
 
-    if (role === "artist") setMenuItems(artistMenus);
-    else if (role === "agent") setMenuItems(agentMenus);
-    else setMenuItems([]);
+    const fetchRole = async () => {
+      try {
+        const data = await apiGet<{ role: "artist" | "agent" | null }>(
+          "/auth/role",
+        );
+
+        if (data.role === "artist") {
+          setMenuItems(menus.artist);
+        } else if (data.role === "agent") {
+          setMenuItems(menus.agent);
+        } else {
+          setMenuItems(menus.public);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+        setMenuItems(menus.public);
+      }
+    };
+
+    void fetchRole();
   }, [session, isPending]);
 
   useEffect(() => {
