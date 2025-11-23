@@ -27,8 +27,13 @@ export default function DashboardPage() {
     if (!(isPending || session?.user)) {
       router.push("/login");
     }
+
     if (session?.user) {
       getUserRole().then((fetchedRole) => {
+        if (!fetchedRole) {
+          router.push("/onboarding");
+          return;
+        }
         setRole(fetchedRole);
         setLoading(false);
       });
