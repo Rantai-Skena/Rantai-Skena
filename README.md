@@ -53,21 +53,7 @@ Frontend menyediakan dua dashboard utama:
 
 Data inilah yang ke depan bisa dikembangkan menjadi **“digital legibility”** dan rekam jejak gigs/kerja sama sebagai dasar analisis risiko & bukti legal untuk kebutuhan seperti Visa P-1/O-1.
 
-### 5. Rantai Skena AI Assistant (Chatbot Keuangan & Karier)
-
-- Terdapat route backend `/chat` yang menghubungkan UI chat dengan **OpenAI** via `ai-sdk` dan `@assistant-ui/react-ai-sdk`.
-- System prompt mendefinisikan AI sebagai:
-
-  > “Rantai Skena AI Assistant, virtual road manager dan financial consultant untuk skena DIY alternatif Indonesia.”
-
-- Fokus chatbot:
-  - **Kalkulator budget gigs & honor minimum**
-  - **Estimasi royalti streaming** (Spotify, Bandcamp, dsb.)
-  - Penjelasan singkat soal **pajak** (PPh 21, PPh 22, PPN) dan perhitungan kasar
-  - Template negosiasi pembayaran & royalti
-  - Q&A seputar **LMKN** dan langkah mendaftar.
-
-Saat ini layanan AI berjalan langsung dari Hono server, dan ke depan dapat diekstraksi menjadi RAG-service terpisah (FastAPI + LangChain + Pinecone) sesuai roadmap di proposal.
+### 5. Rantai Skena AI Assistant
 
 ---
 
