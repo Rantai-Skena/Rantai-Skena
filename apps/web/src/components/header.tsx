@@ -29,7 +29,7 @@ const menus: Record<Role, { name: string; href: string }[]> = {
   ],
   agent: [
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Manage events", href: "/dashboard" },
+    { name: "Explore Artist", href: "/dashboard" },
     { name: "Chatbot", href: "/chatbot" },
   ],
 };

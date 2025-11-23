@@ -29,6 +29,10 @@ export default function DashboardPage() {
     }
     if (session?.user) {
       getUserRole().then((fetchedRole) => {
+        if (!fetchedRole) {
+          router.push("/onboarding");
+          return;
+        }
         setRole(fetchedRole);
         setLoading(false);
       });

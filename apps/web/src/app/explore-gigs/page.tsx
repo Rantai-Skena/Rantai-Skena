@@ -1,6 +1,8 @@
 "use client";
+
 import { Calendar, ChevronDown, Clock, MapPin, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { HeroHeader } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,127 +16,140 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { apiGet } from "@/lib/api-client";
 
-interface EventData {
-  id: number;
-  name: string;
-  location: string;
-  date: string;
-  time: string;
-  genres: string[];
-}
+type GigRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  city: string | null;
+  venue: string | null;
+  coverUrl: string | null;
+  startDate: string;
+  endDate: string;
+  status: string;
+  artistId: string;
+  createdAt: string;
+};
 
-const dummyEvents: EventData[] = [
-  {
-    id: 1,
-    name: "Rock the City",
-    location: "Jakarta",
-    date: "25 Nov 2025",
-    time: "19:00 WIB",
-    genres: ["Rock", "Metalcore"],
-  },
-  {
-    id: 2,
-    name: "Indie Sunset",
-    location: "Bandung",
-    date: "10 Des 2025",
-    time: "16:00 WIB",
-    genres: ["Indie", "Pop"],
-  },
-  {
-    id: 3,
-    name: "Jazz & Blues Night",
-    location: "Depok",
-    date: "05 Jan 2026",
-    time: "20:30 WIB",
-    genres: ["Jazz", "R&B"],
-  },
-  {
-    id: 4,
-    name: "EDM Festival X",
-    location: "Bogor",
-    date: "14 Feb 2026",
-    time: "22:00 WIB",
-    genres: ["EDM", "HipHop"],
-  },
-  {
-    id: 5,
-    name: "Punk Revival",
-    location: "Jakarta",
-    date: "01 Mar 2026",
-    time: "18:00 WIB",
-    genres: ["Punk", "Hardcore"],
-  },
-  {
-    id: 6,
-    name: "Emo & Hardcore Fest",
-    location: "Tangerang",
-    date: "15 Mar 2026",
-    time: "17:30 WIB",
-    genres: ["Emo", "Hardcore"],
-  },
-];
+const GENRES = [
+  "Pop",
+  "Indie",
+  "Hardcore",
+  "Emo",
+  "Rock",
+  "Jazz",
+  "R&B",
+  "HipHop",
+  "Punk",
+  "Metalcore",
+  "EDM",
+] as const;
+
+const CITIES = [
+  "Jakarta",
+  "Bandung",
+  "Depok",
+  "Tangerang",
+  "Bekasi",
+  "Bogor",
+  "Surabaya",
+  "Semarang",
+] as const;
 
 export default function GigsPage() {
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
   const [selectedCities, setSelectedCities] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [gigs, setGigs] = useState<GigRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const genres = [
-    "Pop",
-    "Indie",
-    "Hardcore",
-    "Emo",
-    "Rock",
-    "Jazz",
-    "R&B",
-    "HipHop",
-    "Punk",
-    "Metalcore",
-    "EDM",
-  ];
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+  useEffect(() => {
+    void fetchGigs();
+  }, []);
 
-  const cities = [
-    "Jakarta",
-    "Bandung",
-    "Depok",
-    "Tangerang",
-    "Bekasi",
-    "Bogor",
-    "Surabaya",
-    "Semarang",
-  ];
+  const fetchGigs = async (): Promise<void> => {
+    try {
+      setLoading(true);
+      const data = await apiGet<GigRow[]>("/explore-gigs");
+      setGigs(data);
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch gigs:", error);
+      }
+      toast.error("Gagal mengambil data gigs explore");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleSelection = (
     item: string,
     setter: React.Dispatch<React.SetStateAction<Set<string>>>,
-  ) => {
-    setter((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(item)) newSet.delete(item);
-      else newSet.add(item);
+  ): void => {
+    setter((previousSet) => {
+      const newSet = new Set(previousSet);
+      if (newSet.has(item)) {
+        newSet.delete(item);
+      } else {
+        newSet.add(item);
+      }
       return newSet;
     });
   };
 
-  // 🔍 FILTERING
-  const filteredEvents = dummyEvents.filter((event) => {
-    const search = searchQuery.toLowerCase();
+  const filteredGigs = useMemo(() => {
+    return gigs
+      .filter((gig) => {
+        // Search query filter
+        const matchesSearch =
+          searchQuery === "" ||
+          gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          gig.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchSearch =
-      event.name.toLowerCase().includes(search) ||
-      event.location.toLowerCase().includes(search) ||
-      event.genres.some((g) => g.toLowerCase().includes(search));
+        // City filter
+        const matchesCity =
+          selectedCities.size === 0 ||
+          (gig.city && selectedCities.has(gig.city));
 
-    const matchGenre =
-      selectedGenres.size === 0 ||
-      event.genres.some((g) => selectedGenres.has(g));
+        return matchesSearch && matchesCity;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+      );
+  }, [gigs, searchQuery, selectedCities]);
 
-    const matchCity =
-      selectedCities.size === 0 || selectedCities.has(event.location);
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
-    return matchSearch && matchGenre && matchCity;
-  });
+  const formatTime = (dateString: string): string => {
+    return new Date(dateString).toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  if (loading) {
+    return (
+      <>
+        <HeroHeader />
+        <div className="flex w-full justify-center py-20">
+          <div className="flex items-center space-x-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+            <span className="text-gray-400">Loading gigs...</span>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -145,7 +160,7 @@ export default function GigsPage() {
           <div className="relative flex w-full items-center">
             <Search className="-translate-y-1/2 absolute top-1/2 left-2 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search"
+              placeholder="Search gigs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border-neutral-700 bg-neutral-800 pl-7 text-white placeholder:text-gray-500"
@@ -168,7 +183,7 @@ export default function GigsPage() {
                   <DropdownMenuLabel>Select Genres</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {genres.map((genre) => (
+                  {GENRES.map((genre) => (
                     <DropdownMenuCheckboxItem
                       key={genre}
                       checked={selectedGenres.has(genre)}
@@ -182,7 +197,6 @@ export default function GigsPage() {
 
                   <DropdownMenuSeparator />
 
-                  {/* 🔥 CLEAR GENRES BUTTON */}
                   <Button
                     variant="ghost"
                     className="w-full text-red-400 hover:text-red-300"
@@ -207,7 +221,7 @@ export default function GigsPage() {
                   <DropdownMenuLabel>Select Locations</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {cities.map((city) => (
+                  {CITIES.map((city) => (
                     <DropdownMenuCheckboxItem
                       key={city}
                       checked={selectedCities.has(city)}
@@ -221,7 +235,6 @@ export default function GigsPage() {
 
                   <DropdownMenuSeparator />
 
-                  {/* 🔥 CLEAR CITIES BUTTON */}
                   <Button
                     variant="ghost"
                     className="w-full text-red-400 hover:text-red-300"
@@ -235,48 +248,53 @@ export default function GigsPage() {
           </div>
         </div>
 
-        {/* Event Grid */}
-        <div className="grid w-full grid-cols-3 gap-6">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
+        {/* Gigs Grid */}
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredGigs.length > 0 ? (
+            filteredGigs.map((gig) => (
               <Card
-                key={event.id}
+                key={gig.id}
                 className="hover:-translate-y-2 w-full overflow-hidden border border-neutral-700 bg-neutral-800 pb-0 shadow-xl transition-all hover:border-sky-500 hover:shadow-[0_0_25px_rgba(31,154,255,0.35)]"
               >
-                <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300" />
+                <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300">
+                  {gig.coverUrl ? (
+                    <img
+                      src={gig.coverUrl}
+                      alt={`${gig.title} cover`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center text-sm">
+                      No Image
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex flex-col gap-3 p-4">
                   <h3 className="font-bold text-white text-xl leading-tight">
-                    {event.name}
+                    {gig.title}
                   </h3>
 
-                  <div className="mb-2 flex flex-wrap gap-2">
-                    {event.genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className="rounded-full border border-gradient-artist bg-card px-2 py-0.5 font-medium text-xs"
-                      >
-                        <span className="bg-gradient-artist bg-clip-text text-transparent">
-                          {genre}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
+                  {gig.description && (
+                    <p className="line-clamp-2 text-gray-400 text-sm">
+                      {gig.description}
+                    </p>
+                  )}
 
                   <div className="space-y-2 text-gray-400 text-sm">
                     <div className="flex items-center gap-2">
                       <MapPin size={16} />
-                      <p>{event.location}</p>
+                      <p>{gig.venue || gig.city || "TBA"}</p>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Calendar size={16} />
-                      <p>{event.date}</p>
+                      <p>{formatDate(gig.startDate)}</p>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Clock size={16} />
-                      <p>{event.time}</p>
+                      <p>{formatTime(gig.startDate)}</p>
                     </div>
                   </div>
 
@@ -285,15 +303,15 @@ export default function GigsPage() {
                       View
                     </Button>
                     <Button variant="artistOutline" className="px-10 py-px">
-                      Edit
+                      Apply
                     </Button>
                   </div>
                 </div>
               </Card>
             ))
           ) : (
-            <div className="col-span-3 text-center text-gray-500 text-lg">
-              No events found matching your criteria.
+            <div className="col-span-full text-center text-gray-500 text-lg">
+              No gigs found matching your criteria.
             </div>
           )}
         </div>

@@ -127,3 +127,17 @@ export const galleryImage = pgTable("gallery_image", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const gigs = pgTable("gigs", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  city: text("city"),
+  venue: text("venue"),
+  coverUrl: text("cover_url"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  status: text("status").notNull(),
+  artistId: text("artist_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
