@@ -22,7 +22,7 @@ export default function ChatbotPage() {
   };
 
   // Scroll to bottom effect
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <s>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =

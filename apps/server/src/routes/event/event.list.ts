@@ -7,12 +7,6 @@ import { getCurrentUser } from "../../utils/getCurrentUser";
 
 const router = new Hono();
 
-router.get("/public", async (c) => {
-  const published = await db.select().from(event);
-
-  return c.json({ success: true, data: published });
-});
-
 // GET /api/events  (artist → published, agent → own)
 router.get("/", roleGuard(), async (c) => {
   const user = getCurrentUser(c);

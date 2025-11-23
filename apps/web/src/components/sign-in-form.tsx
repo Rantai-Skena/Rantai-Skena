@@ -24,45 +24,21 @@ export default function SignInForm({
       password: "",
     },
     onSubmit: async ({ value }) => {
-      try {
-        await authClient.signIn.email(
-          {
-            email: value.email,
-            password: value.password,
+      await authClient.signIn.email(
+        {
+          email: value.email,
+          password: value.password,
+        },
+        {
+          onSuccess: () => {
+            router.push("/dashboard");
+            toast.success("Berhasil masuk");
           },
-          {
-            onSuccess: () => {
-              router.push("/dashboard");
-              toast.success("Berhasil masuk");
-            },
-            onError: (error) => {
-              console.error("Auth error:", error);
-
-              // Handle different types of errors
-              if (error.error?.message) {
-                toast.error(error.error.message);
-              } else if (error.error?.statusText) {
-                toast.error(error.error.statusText);
-              } else {
-                toast.error("Terjadi kesalahan saat masuk. Silakan coba lagi.");
-              }
-            },
+          onError: (error) => {
+            toast.error(error.error.message || error.error.statusText);
           },
-        );
-      } catch (error) {
-        console.error("Network or unexpected error:", error);
-
-        // Handle network errors specifically
-        if (
-          error instanceof TypeError &&
-          error.message.includes("Failed to fetch")
-        ) {
-          // toast.error("Tidak dapat terhubung ke server. Periksa koneksi internet Anda.");
-          toast.error(error.message);
-        } else {
-          toast.error("Terjadi kesalahan tidak terduga. Silakan coba lagi.");
-        }
-      }
+        },
+      );
     },
     validators: {
       onSubmit: z.object({
@@ -84,7 +60,7 @@ export default function SignInForm({
             <div className="text-center">
               <Link
                 href="/"
-                aria-label="Go to homepage"
+                aria-label="go home"
                 className="mx-auto block w-fit"
               >
                 <h1 className="font-bold text-2xl text-white tracking-wide">
@@ -126,7 +102,6 @@ export default function SignInForm({
                         onChange={(e) => field.handleChange(e.target.value)}
                         className="rounded-sm border border-white/20 bg-background/40 text-white placeholder:text-muted-foreground focus:border-primary"
                         placeholder="masukkan email anda"
-                        autoComplete="email"
                       />
                       {field.state.meta.errors.map((error) => (
                         <p
@@ -162,7 +137,6 @@ export default function SignInForm({
                         onChange={(e) => field.handleChange(e.target.value)}
                         className="rounded-sm border border-white/20 bg-background/40 text-white placeholder:text-muted-foreground focus:border-primary"
                         placeholder="masukkan password anda"
-                        autoComplete="current-password"
                       />
                       {field.state.meta.errors.map((error) => (
                         <p
