@@ -1,118 +1,120 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { apiGet } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
-interface Application {
-  id: number;
-  title: string;
-  status: "Pending" | "Approved" | "Rejected" | "Completed";
-  agency: string;
-  date: string;
-}
+type ApplicationStatus = "pending" | "approved" | "rejected" | "completed";
 
-const dummyApplications: Application[] = [
-  {
-    id: 1,
-    title: "Festival Jakarta Musik",
-    status: "Approved",
-    agency: "Promotor XYZ",
-    date: "20 Des 2025",
-  },
-  {
-    id: 2,
-    title: "Konser Kampus ITB",
-    status: "Pending",
-    agency: "Penyelenggara Kampus",
-    date: "15 Jan 2026",
-  },
-  {
-    id: 3,
-    title: "Acara Seni Lokal",
-    status: "Rejected",
-    agency: "Komunitas Seni",
-    date: "05 Feb 2026",
-  },
-  {
-    id: 4,
-    title: "Panggung Hiburan Akhir Pekan",
-    status: "Approved",
-    agency: "Dinas Pariwisata",
-    date: "10 Mar 2026",
-  },
-  {
-    id: 5,
-    title: "Lomba Band Nasional",
-    status: "Pending",
-    agency: "Asosiasi Musik",
-    date: "22 Apr 2026",
-  },
-  {
-    id: 6,
-    title: "Charity Show",
-    status: "Completed",
-    agency: "Yayasan Kasih",
-    date: "01 Mei 2026",
-  },
+type ApplicationApi = {
+  id: string;
+  status: ApplicationStatus;
+  message: string | null;
+  createdAt: string;
+  eventId: string;
+  eventName: string;
+  eventLocation: string | null;
+  eventStartsAt: string | null;
+  agentId: string;
+};
+
+const TABS = [
+  { id: "all" as const, label: "All" },
+  { id: "pending" as const, label: "Pending" },
+
+  { id: "approved" as const, label: "Accepted" },
+  { id: "rejected" as const, label: "Rejected" },
+  { id: "completed" as const, label: "Completed" },
 ];
 
+type TabId = (typeof TABS)[number]["id"];
+
+function formatStatusLabel(status: ApplicationStatus) {
+  if (status === "approved") return "Accepted";
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function statusBadgeClass(status: ApplicationStatus) {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-500/10 text-yellow-400 border border-yellow-500/40";
+    case "approved":
+      return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/40";
+    case "rejected":
+      return "bg-red-500/10 text-red-400 border border-red-500/40";
+    case "completed":
+      return "bg-blue-500/10 text-blue-400 border border-blue-500/40";
+    default:
+      return "bg-muted text-foreground";
+  }
+}
+
 export default function MyApplication() {
-  const [activeTab, setActiveTab] = useState<
-    "all" | "accepted" | "pending" | "rejected" | "completed"
-  >("all");
+  const [activeTab, setActiveTab] = useState<TabId>("all");
+  const [apps, setApps] = useState<ApplicationApi[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const tabs = [
-    { id: "all", label: "All" },
-    { id: "accepted", label: "Acepted" },
-    { id: "pending", label: "Pending" },
-    { id: "rejected", label: "Rejected" },
-    { id: "completed", label: "Completed" },
-  ];
 
-  const filteredApplications = dummyApplications.filter((app) => {
-    if (activeTab === "all") return true;
+  useEffect(() => {
+    let cancelled = false;
 
-    const statusMapping = {
-      accepted: "approved",
-      pending: "pending",
-      rejected: "rejected",
-      completed: "completed"
-    };
-
-    const targetStatus = statusMapping[activeTab as keyof typeof statusMapping];
-
-    return app.status.toLowerCase() === targetStatus;
-  });
-
-  const getStatusColor = (status: Application["status"]) => {
-    switch (status) {
-      case "Approved":
-        return "text-green-500 border-green-500 bg-green-500/10";
-      case "Pending":
-        return "text-yellow-500 border-yellow-500 bg-yellow-500/10";
-      case "Rejected":
-        return "text-red-500 border-red-500 bg-red-500/10";
-      default:
-        return "text-gray-500 border-gray-500";
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await apiGet<ApplicationApi[]>("/applications/my");
+        if (!cancelled) {
+          setApps(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load applications",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     }
-  };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (activeTab === "all") return apps;
+    return apps.filter((a) => a.status === activeTab);
+  }, [apps, activeTab]);
 
   return (
-    <div className="flex min-h-full w-full flex-col rounded-2xl bg-neutral-900 p-8">
-      <h2 className="mb-6 font-bold text-h4 text-white">My Application</h2>
+    <div className="flex w-full flex-col gap-4">
+      <header className="flex items-center justify-between">
+        <div>
+          <h2 className="text-h4">My Applications</h2>
+          <p className="text-bodyLarge text-muted-foreground">
+            Track the status of your event applications in real time.
+          </p>
+        </div>
+      </header>
 
-      <div className="custom-scrollbar mb-6 flex w-full justify-center space-x-2 overflow-x-auto border-gray-700 border-b pb-2">
-        {tabs.map((tab) => (
+      <div className="flex gap-2">
+        {TABS.map((tab) => (
           <Button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as typeof activeTab)}
+            variant={activeTab === tab.id ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "px-4 py-0 font-medium text-sm transition-colors duration-200",
-              activeTab === tab.id
-                ? "bg-gradient-artist text-white shadow-md"
-                : "bg-transparent text-gray-300 hover:bg-neutral-800",
+              "rounded-full",
+              activeTab === tab.id && "bg-gradient-artist text-white shadow-md",
             )}
           >
             {tab.label}
@@ -120,50 +122,67 @@ export default function MyApplication() {
         ))}
       </div>
 
-      <div className="grow">
-        {filteredApplications.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
-            {filteredApplications.map((app) => (
-              <Card
-                key={app.id}
-                className="gap-2 border border-neutral-700 bg-neutral-800 p-5 shadow-xl transition-all hover:border-autumn-500"
-              >
-                <div className="mb-3 flex items-start justify-between">
-                  <h3 className="font-semibold text-white text-xl">
-                    {app.title}
-                  </h3>
-                  <div
-                    className={cn(
-                      "rounded-full border px-3 py-1 font-medium text-xs",
-                      getStatusColor(app.status),
-                    )}
-                  >
-                    {app.status}
-                  </div>
-                </div>
-
-                <div className="flex flex-col">
-                  <p className="mb-1 text-gray-400">{app.agency}</p>
-                  <p className="text-gray-400">{app.date}</p>
-                </div>
-
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    variant="ghost"
-                    className="text-autumn-500 text-sm hover:bg-autumn-500/20"
-                  >
-                    Lihat Detail
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-xl bg-neutral-800 p-10 text-center text-gray-400">
-            <p>Tidak ada aplikasi dengan status {activeTab.toUpperCase()}.</p>
-          </div>
+      <Card className="flex-1 bg-card/60 p-4">
+        {loading && (
+          <p className="text-muted-foreground text-sm">
+            Loading your applications...
+          </p>
         )}
-      </div>
+
+        {error && !loading && (
+          <p className="text-red-400 text-sm">Error: {error}</p>
+        )}
+
+        {!loading && !error && filtered.length === 0 && (
+          <p className="text-muted-foreground text-sm">
+            You don&apos;t have any applications yet.
+          </p>
+        )}
+
+        {!loading && !error && filtered.length > 0 && (
+          <ul className="mt-2 space-y-3">
+            {filtered.map((app) => {
+              const date =
+                app.eventStartsAt ?? app.createdAt ?? new Date().toISOString();
+
+              return (
+                <li
+                  key={app.id}
+                  className="flex flex-col gap-2 rounded-lg border border-border bg-card/40 p-3 md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-base">{app.eventName}</h3>
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs",
+                          statusBadgeClass(app.status),
+                        )}
+                      >
+                        {formatStatusLabel(app.status)}
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {app.eventLocation ?? "Location TBA"}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {new Date(date).toLocaleString("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
+                    {app.message && (
+                      <p className="text-muted-foreground text-xs">
+                        Your message: {app.message}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Card>
     </div>
   );
 }

@@ -29,6 +29,10 @@ export const HeroHeader = () => {
 
   const { data: session, isPending } = authClient.useSession();
 
+  const logout = async () => {
+    await authClient.signOut();
+    window.location.href = "/login";
+  };
   // Tentukan menu berdasarkan role user
   useEffect(() => {
     if (isPending) return;
@@ -112,7 +116,13 @@ export const HeroHeader = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 {session?.user ? (
-                  <Button asChild size="sm" variant="outline">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    onClick={logout}
+                    className="hover:cursor-pointer hover:bg-red-600"
+                  >
                     <span className="px-3">Logout</span>
                   </Button>
                 ) : (

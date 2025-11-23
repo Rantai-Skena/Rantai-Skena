@@ -1,6 +1,12 @@
 import { cn } from "@/lib/utils";
 
-export const Logo = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => (
+export const Logo = ({
+  className,
+  uniColor,
+}: {
+  className?: string;
+  uniColor?: boolean;
+}) => (
   <svg
     className={cn("h-5 w-auto text-foreground", className)}
     fill="none"
@@ -31,7 +37,13 @@ export const Logo = ({ className, uniColor }: { className?: string; uniColor?: b
   </svg>
 );
 
-export const LogoIcon = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => (
+export const LogoIcon = ({
+  className,
+  uniColor,
+}: {
+  className?: string;
+  uniColor?: boolean;
+}) => (
   <svg
     className={cn("size-5", className)}
     fill="none"
