@@ -10,9 +10,9 @@ import { Team } from "./team";
 import { Card } from "./ui/card";
 
 const stats = [
-  { value: "1.5K+", label: "Artists curated" },
-  { value: "800+", label: "Agents matched" },
-  { value: "96%", label: "Success stories completed" },
+  { value: "13y → 3y", label: "Acceleration Goal" },
+  { value: "$8B+", label: "Global Market Scope" },
+  { value: "DIY", label: "Core Philosophy" },
 ] as const;
 
 const heroHighlights = [
@@ -116,9 +116,7 @@ export default function HeroSection() {
                   preset="fade-in-blur"
                   speedSegment={0.3}
                 >
-                  Connect artists, agents, and venues with curated
-                  collaborations that scale effortlessly. RantaiSkena keeps your
-                  network synchronized from audition to encore.
+                  Your bridge from the underground to the world. We connect bands, venues, and agents to build tours that actually happen. Real connections, no gatekeepers.
                 </TextEffect>
 
                 <AnimatedGroup
@@ -175,7 +173,7 @@ export default function HeroSection() {
                       key={stat.label}
                       className="rounded-xl border border-white/10 bg-background/40 px-4 py-3 text-left sm:rounded-2xl sm:px-6 sm:py-5"
                     >
-                      <p className="font-bold text-h4 text-white sm:text-h3">
+                      <p className="font-bold text-h5 text-white sm:text-h4">
                         {stat.value}
                       </p>
                       <p className="mt-1 text-muted-foreground text-xs sm:mt-2 sm:text-sm">
@@ -187,15 +185,13 @@ export default function HeroSection() {
               </div>
               <Card className="hidden rounded-[28px] border border-white/5 p-8 text-white shadow-2xl shadow-sky-600/40 lg:block">
                 <p className="text-sm text-white/70 uppercase tracking-[0.4em]">
-                  Spotlight
+                  Momentum
                 </p>
                 <p className="mt-4 font-semibold text-h4 text-white">
-                  Always on tour
+                  Keep It Moving
                 </p>
                 <p className="mt-2 text-body text-white/80">
-                  lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Real Recognize Real, connect with active venues and agents who actually want to book. No gates, just open doors for everyone.
                 </p>
                 <ul className="mt-6 space-y-3 text-sm text-white/80">
                   {heroHighlights.map((highlight) => (
@@ -311,7 +307,7 @@ export default function HeroSection() {
                   </div>
 
                   <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-                    <Link href="/onboarding/artist">
+                    <Link href="/login">
                       <Button
                         variant="destructive"
                         size="lg"
@@ -320,7 +316,7 @@ export default function HeroSection() {
                         Join as Artist
                       </Button>
                     </Link>
-                    <Link href="/onboarding/agent">
+                    <Link href="/login">
                       <Button
                         variant="outline"
                         size="lg"
