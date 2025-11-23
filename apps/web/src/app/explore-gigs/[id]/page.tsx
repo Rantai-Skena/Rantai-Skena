@@ -146,9 +146,9 @@ export default function EventDetail() {
         <section className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Cover / Banner */}
           {loading ? (
-            <Skeleton className="aspect-video h-full rounded-xl lg:aspect-5/4" />
+            <Skeleton className="aspect-video rounded-xl lg:aspect-5/4" />
           ) : (
-            <div className="aspect-video h-full rounded-xl bg-gray-200 lg:aspect-5/4" />
+            <div className="aspect-video rounded-xl bg-gray-200 lg:aspect-5/4" />
           )}
 
           {/* Detail */}
