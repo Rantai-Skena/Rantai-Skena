@@ -23,6 +23,7 @@ export const artistProfile = pgTable("artist_profile", {
   genre: text("genre"),
   bio: text("bio"),
 
+  contactEmail: text("contact_email"),
   instagram: text("instagram"),
   spotify: text("spotify"),
   youtube: text("youtube"),

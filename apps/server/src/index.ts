@@ -9,6 +9,7 @@ import applicationAgentRoutes from "./routes/application/application.agent";
 import applicationArtistRoutes from "./routes/application/application.artist";
 import applicationStatusRoutes from "./routes/application/application.status";
 import artistProfileRoutes from "./routes/artist/profile";
+import artistPublicRoutes from "./routes/artist/public";
 import authRoleRoutes from "./routes/auth/role";
 import agentEventRoutes from "./routes/event/agent-events";
 import eventRoutes from "./routes/event/index";
@@ -33,6 +34,7 @@ app.route("/api/auth", authRoleRoutes);
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/artist", artistProfileRoutes);
+app.route("/api/artists", artistPublicRoutes);
 app.route("/api/agent", agentProfileRoutes);
 
 app.route("/api/events", eventRoutes);
