@@ -53,6 +53,7 @@ export default function MyMusic() {
   const [savingMusic, setSavingMusic] = useState(false);
   const [savingGallery, setSavingGallery] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     void fetchAll();
   }, []);
@@ -75,7 +76,6 @@ export default function MyMusic() {
       setLoading(false);
     }
   }
-
 
   async function handleCreateMusic(e: React.FormEvent) {
     e.preventDefault();
@@ -114,7 +114,6 @@ export default function MyMusic() {
     }
   }
 
-
   async function handleCreateGallery(e: React.FormEvent) {
     e.preventDefault();
 
@@ -126,10 +125,13 @@ export default function MyMusic() {
     try {
       setSavingGallery(true);
 
-      const created = await apiPost<GalleryRow, typeof galleryForm>("/gallery", {
-        imageUrl: galleryForm.imageUrl,
-        caption: galleryForm.caption || "",
-      });
+      const created = await apiPost<GalleryRow, typeof galleryForm>(
+        "/gallery",
+        {
+          imageUrl: galleryForm.imageUrl,
+          caption: galleryForm.caption || "",
+        },
+      );
 
       setGallery((prev) => [created, ...prev]);
       setGalleryForm({ imageUrl: "", caption: "" });
@@ -142,7 +144,6 @@ export default function MyMusic() {
       setSavingGallery(false);
     }
   }
-
 
   return (
     <div className="space-y-6">

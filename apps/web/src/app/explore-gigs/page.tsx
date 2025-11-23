@@ -107,7 +107,7 @@ export default function GigsPage() {
 
   const toggleSelection = (
     item: string,
-    setter: React.Dispatch<React.SetStateAction<Set<string>>>
+    setter: React.Dispatch<React.SetStateAction<Set<string>>>,
   ) => {
     setter((prev) => {
       const newSet = new Set(prev);

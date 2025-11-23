@@ -81,7 +81,7 @@ export default function OnboardingAgent() {
 
         if (!res.ok || !data?.success) {
           toast.error(
-            data?.error ?? "Failed to save agent profile. Please try again."
+            data?.error ?? "Failed to save agent profile. Please try again.",
           );
           return;
         }
@@ -105,7 +105,6 @@ export default function OnboardingAgent() {
       }),
     },
   });
-
 
   if (isPending) {
     return <Loader />;
@@ -292,16 +291,18 @@ export default function OnboardingAgent() {
                                     ]);
                                   }
                                 }}
-                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
-                                  ? "border-fuchsia-500"
-                                  : "border-white/40 bg-transparent hover:bg-white/10"
-                                  }`}
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${
+                                  selected
+                                    ? "border-fuchsia-500"
+                                    : "border-white/40 bg-transparent hover:bg-white/10"
+                                }`}
                               >
                                 <span
-                                  className={`${selected
-                                    ? "bg-gradient-agent bg-clip-text text-transparent"
-                                    : "text-white"
-                                    }`}
+                                  className={`${
+                                    selected
+                                      ? "bg-gradient-agent bg-clip-text text-transparent"
+                                      : "text-white"
+                                  }`}
                                 >
                                   {g}
                                 </span>

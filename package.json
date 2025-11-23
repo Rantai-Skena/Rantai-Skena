@@ -19,7 +19,9 @@
     "db:push": "turbo -F @rantai-skena/db db:push",
     "db:studio": "turbo -F @rantai-skena/db db:studio",
     "db:generate": "turbo -F @rantai-skena/db db:generate",
-    "db:migrate": "turbo -F @rantai-skena/db db:migrate"
+    "db:migrate": "turbo -F @rantai-skena/db db:migrate",
+    "format": "ultracite fix",
+    "lint": "ultracite check"
   },
   "dependencies": {
     "dotenv": "^17.2.2",

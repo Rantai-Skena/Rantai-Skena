@@ -52,7 +52,9 @@ export default function DashboardArtist({
 
         <main className="flex min-h-screen grow overflow-y-auto bg-card p-6">
           {activeTab === "My Music" && <MyMusic />}
-          {activeTab === "Performance Schedule" && <Schedule variant="artist"/>}
+          {activeTab === "Performance Schedule" && (
+            <Schedule variant="artist" />
+          )}
           {activeTab === "My Applications" && <MyApplication />}
         </main>
       </div>

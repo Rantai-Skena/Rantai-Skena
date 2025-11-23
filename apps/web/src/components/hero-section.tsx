@@ -116,7 +116,9 @@ export default function HeroSection() {
                   preset="fade-in-blur"
                   speedSegment={0.3}
                 >
-                  Your bridge from the underground to the world. We connect bands, venues, and agents to build tours that actually happen. Real connections, no gatekeepers.
+                  Your bridge from the underground to the world. We connect
+                  bands, venues, and agents to build tours that actually happen.
+                  Real connections, no gatekeepers.
                 </TextEffect>
 
                 <AnimatedGroup
@@ -191,7 +193,8 @@ export default function HeroSection() {
                   Keep It Moving
                 </p>
                 <p className="mt-2 text-body text-white/80">
-                  Real Recognize Real, connect with active venues and agents who actually want to book. No gates, just open doors for everyone.
+                  Real Recognize Real, connect with active venues and agents who
+                  actually want to book. No gates, just open doors for everyone.
                 </p>
                 <ul className="mt-6 space-y-3 text-sm text-white/80">
                   {heroHighlights.map((highlight) => (

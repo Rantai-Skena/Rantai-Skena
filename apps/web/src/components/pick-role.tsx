@@ -10,7 +10,9 @@ import { Card } from "./ui/card";
 
 export default function PickRole() {
   const router = useRouter();
-  const [loadingRole, setLoadingRole] = useState<"artist" | "agent" | null>(null);
+  const [loadingRole, setLoadingRole] = useState<"artist" | "agent" | null>(
+    null,
+  );
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
 
   const handleRoleSelect = async (role: "artist" | "agent") => {
@@ -35,7 +37,9 @@ export default function PickRole() {
         );
       }
 
-      router.push(role === "artist" ? "/onboarding/artist" : "/onboarding/agent");
+      router.push(
+        role === "artist" ? "/onboarding/artist" : "/onboarding/agent",
+      );
     } catch (error) {
       console.error(error);
       toast.error("Unable to update your role. Please try again.");
@@ -74,7 +78,9 @@ export default function PickRole() {
                 disabled={loadingRole !== null}
                 onClick={() => void handleRoleSelect("artist")}
               >
-                {loadingRole === "artist" ? "Setting role..." : "Continue as Artist"}
+                {loadingRole === "artist"
+                  ? "Setting role..."
+                  : "Continue as Artist"}
               </Button>
             </div>
           </Card>
@@ -94,7 +100,9 @@ export default function PickRole() {
                 disabled={loadingRole !== null}
                 onClick={() => void handleRoleSelect("agent")}
               >
-                {loadingRole === "agent" ? "Setting role..." : "Continue as Agent"}
+                {loadingRole === "agent"
+                  ? "Setting role..."
+                  : "Continue as Agent"}
               </Button>
             </div>
           </Card>

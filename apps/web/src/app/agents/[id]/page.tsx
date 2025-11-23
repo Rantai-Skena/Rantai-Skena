@@ -1,7 +1,7 @@
 import { Clock, Instagram, Mail, MapPin } from "lucide-react";
+import { HeroHeader } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { HeroHeader } from "@/components/header";
 
 interface EventData {
   id: number;
@@ -78,7 +78,7 @@ const InfoItem = ({
 export default function EventDetail() {
   return (
     <>
-    <HeroHeader/>
+      <HeroHeader />
       <main className="mx-auto min-h-screen max-w-7xl p-8 md:p-12 lg:p-20">
         <section className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="aspect-video h-full rounded-xl bg-gray-200 lg:aspect-5/4" />

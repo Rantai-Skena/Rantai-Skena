@@ -1,7 +1,6 @@
-// app/chat/page.tsx (atau pages/chat.tsx jika pakai Pages Router)
 "use client";
 
-import { Menu, Paperclip, Send } from "lucide-react"; // Import Menu icon untuk toggle
+import { Menu, Paperclip, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { HeroHeader } from "@/components/header";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ export default function ChatbotPage() {
   };
 
   // Scroll to bottom effect
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -52,8 +52,9 @@ export default function ChatbotPage() {
             onClick={toggleSidebar}
             variant="ghost"
             size="icon"
-            className={`absolute top-[4.5rem] bg-neutral-800 ${sidebarOpen ? "left-[16rem] rounded-l-none" : "left-4"
-              } z-20 transition-all duration-300`} // Sesuaikan top/left sesuai HeroHeader dan layout Anda
+            className={`absolute top-18 bg-neutral-800 ${
+              sidebarOpen ? "left-64 rounded-l-none" : "left-4"
+            } z-20 transition-all duration-300`} // Sesuaikan top/left sesuai HeroHeader dan layout Anda
             aria-label={sidebarOpen ? "Tutup Sidebar" : "Buka Sidebar"}
           >
             <Menu className="h-6 w-6" />
@@ -71,8 +72,9 @@ export default function ChatbotPage() {
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.sender === "user" ? "flex-row-reverse" : ""
-                    } items-start gap-3`}
+                  className={`flex ${
+                    msg.sender === "user" ? "flex-row-reverse" : ""
+                  } items-start gap-3`}
                 >
                   <div
                     className={`max-w-[75%] rounded-3xl p-4 ${
@@ -80,7 +82,7 @@ export default function ChatbotPage() {
                       msg.sender === "user"
                         ? "rounded-br-lg bg-[#D1F7E8]"
                         : "rounded-bl-lg bg-gray-100"
-                      }`}
+                    }`}
                   >
                     {msg.text}
                   </div>

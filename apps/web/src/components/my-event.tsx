@@ -71,6 +71,7 @@ export default function MyEvent() {
     description: "",
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     void fetchEvents();
   }, []);
