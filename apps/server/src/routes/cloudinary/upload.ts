@@ -3,6 +3,14 @@ import { Hono } from "hono";
 
 const router = new Hono();
 
+if (
+  process.env.CLOUDINARY_CLOUD_NAME === undefined ||
+  process.env.CLOUDINARY_API_KEY === undefined ||
+  process.env.CLOUDINARY_API_SECRET === undefined
+) {
+  throw new Error("Cloudinary environment variables are not set");
+}
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,

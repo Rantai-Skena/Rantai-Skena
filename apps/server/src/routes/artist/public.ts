@@ -5,54 +5,56 @@ import {
   music,
 } from "@rantai-skena/db/schema/app";
 import { user } from "@rantai-skena/db/schema/auth";
-import { and, eq, ilike, or } from "drizzle-orm";
+import { and, eq, ilike, isNotNull, or } from "drizzle-orm";
 import { Hono } from "hono";
 
 const router = new Hono();
 
-const parseGenres = (raw: unknown): string[] => {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
+const parseGenres = (rawGenre: unknown): string[] => {
+  if (!rawGenre) return [];
+  if (Array.isArray(rawGenre)) return rawGenre.map(String).filter(Boolean);
 
-  if (typeof raw === "string") {
-    return raw
+  if (typeof rawGenre === "string") {
+    return rawGenre
       .split(",")
-      .map((g) => g.trim())
+      .map((genre) => genre.trim())
       .filter(Boolean);
   }
   return [];
 };
 
-// GET /api/artists?q=...&genres=Pop,Rock&city=Jakarta
 router.get("/", async (c) => {
-  const q = c.req.query("q")?.trim();
+  const searchQuery = c.req.query("q")?.trim();
   const genresParam = c.req.query("genres")?.trim();
-  const city = c.req.query("city")?.trim();
+  const cityFilter = c.req.query("city")?.trim();
 
-  const genres = genresParam
+  const requestedGenres = genresParam
     ? genresParam
         .split(",")
-        .map((g) => g.trim())
+        .map((genre) => genre.trim())
         .filter(Boolean)
     : [];
 
-  const whereClauses = [eq(user.role, "artist")];
+  const whereClauses = [
+    // Ensure user has an artist profile (stageName is required)
+    isNotNull(artistProfile.stageName),
+  ];
 
-  if (q) {
+  if (searchQuery) {
     const searchCondition = or(
-      ilike(artistProfile.stageName, `%${q}%`),
-      ilike(user.name, `%${q}%`),
+      ilike(artistProfile.stageName, `%${searchQuery}%`),
+      ilike(user.name, `%${searchQuery}%`),
     );
     if (searchCondition) {
       whereClauses.push(searchCondition);
     }
   }
 
-  if (city) {
-    whereClauses.push(eq(artistProfile.city, city));
+  if (cityFilter) {
+    whereClauses.push(eq(artistProfile.city, cityFilter));
   }
 
-  const rows = await db
+  const artistRows = await db
     .select({
       id: user.id,
       stageName: artistProfile.stageName,
@@ -62,33 +64,33 @@ router.get("/", async (c) => {
       name: user.name,
     })
     .from(user)
-    .leftJoin(artistProfile, eq(artistProfile.userId, user.id))
+    .innerJoin(artistProfile, eq(artistProfile.userId, user.id))
     .where(and(...whereClauses));
 
-  const mapped = rows
-    .map((r) => {
-      const parsed = parseGenres(r.genre);
+  const mappedArtists = artistRows
+    .map((row) => {
+      const parsedGenres = parseGenres(row.genre);
       return {
-        id: r.id,
-        name: r.stageName ?? r.name,
-        city: r.city ?? null,
-        genres: parsed,
-        image: r.image ?? null,
+        id: row.id,
+        name: row.stageName ?? row.name,
+        city: row.city ?? null,
+        genres: parsedGenres,
+        image: row.image ?? null,
       };
     })
-    .filter((r) => {
-      if (genres.length === 0) return true;
-      return r.genres.some((g) => genres.includes(g));
+    .filter((artist) => {
+      if (requestedGenres.length === 0) return true;
+      return artist.genres.some((genre) => requestedGenres.includes(genre));
     });
 
-  return c.json({ success: true, data: mapped });
+  return c.json({ success: true, data: mappedArtists });
 });
 
 // GET /api/artists/:id
 router.get("/:id", async (c) => {
-  const id = c.req.param("id");
+  const artistId = c.req.param("id");
 
-  const profileRow = await db
+  const profileRows = await db
     .select({
       userId: artistProfile.userId,
       stageName: artistProfile.stageName,
@@ -104,15 +106,20 @@ router.get("/:id", async (c) => {
     })
     .from(artistProfile)
     .innerJoin(user, eq(artistProfile.userId, user.id))
-    .where(and(eq(artistProfile.userId, id), eq(user.role, "artist")))
+    .where(
+      and(
+        eq(artistProfile.userId, artistId),
+        isNotNull(artistProfile.stageName), // Ensure profile exists
+      ),
+    )
     .limit(1);
 
-  const profile = profileRow[0];
-  if (!profile) {
+  const artistProfile_data = profileRows[0];
+  if (!artistProfile_data) {
     return c.json({ success: false, error: "Artist not found" }, 404);
   }
 
-  const [tracks, gallery] = await Promise.all([
+  const [musicTracks, galleryImages] = await Promise.all([
     db
       .select({
         id: music.id,
@@ -124,7 +131,7 @@ router.get("/:id", async (c) => {
         createdAt: music.createdAt,
       })
       .from(music)
-      .where(eq(music.artistId, id))
+      .where(eq(music.artistId, artistId))
       .orderBy(music.createdAt),
 
     db
@@ -135,7 +142,7 @@ router.get("/:id", async (c) => {
         createdAt: galleryImage.createdAt,
       })
       .from(galleryImage)
-      .where(eq(galleryImage.artistId, id))
+      .where(eq(galleryImage.artistId, artistId))
       .orderBy(galleryImage.createdAt),
   ]);
 
@@ -143,12 +150,12 @@ router.get("/:id", async (c) => {
     success: true,
     data: {
       profile: {
-        ...profile,
-        genres: parseGenres(profile.genre),
-        name: profile.stageName ?? profile.name,
+        ...artistProfile_data,
+        genres: parseGenres(artistProfile_data.genre),
+        name: artistProfile_data.stageName ?? artistProfile_data.name,
       },
-      music: tracks,
-      gallery,
+      music: musicTracks,
+      gallery: galleryImages,
     },
   });
 });

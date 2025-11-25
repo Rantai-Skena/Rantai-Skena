@@ -22,7 +22,7 @@ export default function DashboardPage() {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <s>
+
   useEffect(() => {
     if (!(isPending || session?.user)) {
       router.push("/login");

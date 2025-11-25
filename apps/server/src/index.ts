@@ -20,6 +20,10 @@ import musicRoutes from "./routes/music/music";
 
 const app = new Hono();
 
+if (!process.env.CORS_ORIGIN) {
+  throw new Error("CORS_ORIGIN environment variable is not set");
+}
+
 app.use(logger());
 app.use(
   "/*",

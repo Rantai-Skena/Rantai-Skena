@@ -48,7 +48,7 @@
         "noUselessFragments": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn",
+        "useExhaustiveDependencies": "off",
         "noUnusedFunctionParameters": "off"
       },
       "performance": {

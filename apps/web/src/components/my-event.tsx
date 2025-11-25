@@ -72,7 +72,7 @@ export default function MyEvent() {
     description: "",
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+
   useEffect(() => {
     void fetchEvents();
   }, []);
@@ -91,7 +91,7 @@ export default function MyEvent() {
   };
 
   const fetchApplications = async (eventId: string): Promise<void> => {
-    // kalau sudah pernah di-load, cukup toggle expand aja
+
     if (applicationsByEvent[eventId]) {
       setExpandedEventId((prev) => (prev === eventId ? null : eventId));
       return;

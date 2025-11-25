@@ -53,7 +53,7 @@ export default function MyMusic() {
   const [savingMusic, setSavingMusic] = useState(false);
   const [savingGallery, setSavingGallery] = useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+
   useEffect(() => {
     void fetchAll();
   }, []);
