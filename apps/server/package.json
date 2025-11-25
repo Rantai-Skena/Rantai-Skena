@@ -17,6 +17,7 @@
     "@rantai-skena/db": "workspace:*",
     "ai": "^5.0.100",
     "better-auth": "catalog:",
+    "cloudinary": "^2.8.0",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.8.2",
