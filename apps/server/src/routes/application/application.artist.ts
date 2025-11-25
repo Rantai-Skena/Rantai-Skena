@@ -34,6 +34,32 @@ router.post("/", roleGuard(["artist"]), async (c) => {
     return c.json({ success: false, error: "Event not found" }, 404);
   }
 
+  // Cek apakah artist sudah pernah apply ke event ini
+  const [existingApplication] = await db
+    .select()
+    .from(application)
+    .where(
+      eq(application.eventId, eventId) && eq(application.artistId, user.id),
+    );
+
+  if (existingApplication) {
+    return c.json(
+      {
+        success: true,
+        data: {
+          id: existingApplication.id,
+          message: existingApplication.message,
+          status: existingApplication.status,
+          eventId: existingApplication.eventId,
+          artistId: existingApplication.artistId,
+          createdAt: existingApplication.createdAt,
+          toastMessage: "Kamu sudah pernah apply ke event ini!",
+        },
+      },
+      200,
+    );
+  }
+
   const [inserted] = await db
     .insert(application)
     .values({
@@ -45,7 +71,22 @@ router.post("/", roleGuard(["artist"]), async (c) => {
     })
     .returning();
 
-  return c.json({ success: true, data: inserted }, 201);
+  return c.json(
+    {
+      success: true,
+      data: {
+        id: inserted?.id,
+        message: inserted?.message,
+        status: inserted?.status,
+        eventId: inserted?.eventId,
+        artistId: inserted?.artistId,
+        createdAt: inserted?.createdAt,
+        toastMessage: "Berhasil apply ke event ini!",
+      },
+      message: "Berhasil apply ke event ini!",
+    },
+    201,
+  );
 });
 
 // List application milik artist (My Application)

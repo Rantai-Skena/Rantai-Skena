@@ -43,6 +43,7 @@ app.route("/api/agent/events", agentEventRoutes);
 
 app.route("/api/applications", applicationArtistRoutes);
 app.route("/api/applications", applicationStatusRoutes);
+app.route("/api/agent/applications", applicationStatusRoutes);
 app.route("/api/events", applicationAgentRoutes);
 
 app.route("/api/music", musicRoutes);

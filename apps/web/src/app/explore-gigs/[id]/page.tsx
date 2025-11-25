@@ -35,6 +35,22 @@ type UiEvent = {
   description?: string | null;
 };
 
+interface ApplicationResponse {
+  id: string;
+  eventId: string;
+  artistId: string;
+  status: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+  toastMessage: string;
+}
+
+interface ApplicationRequest {
+  eventId: string;
+  message: string;
+}
+
 const InfoItem = ({
   Icon,
   text,
@@ -124,18 +140,32 @@ export default function EventDetail() {
       : null;
     return end ? `${start} WIB - ${end} WIB` : `${start} WIB`;
   }, [event]);
-
-  async function handleApply() {
+  async function handleApply(): Promise<void> {
     if (!event) return;
+
     try {
-      await apiPost("/applications", {
+      const applicationData = await apiPost<
+        ApplicationResponse,
+        ApplicationRequest
+      >("/applications", {
         eventId: event.id,
         message: "",
       });
-      toast.success("Berhasil apply ke event ini!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Gagal apply. Pastikan kamu login sebagai artist.");
+
+      if (
+        applicationData.toastMessage === "Kamu sudah pernah apply ke event ini!"
+      ) {
+        toast.info(applicationData.toastMessage);
+      } else {
+        toast.success(applicationData.toastMessage);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Gagal apply. Pastikan kamu login sebagai artist.";
+
+      toast.error(errorMessage);
     }
   }
 

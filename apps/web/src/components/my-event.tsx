@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -446,20 +447,22 @@ export default function MyEvent() {
                             className="rounded-md border bg-muted/40 p-3 text-xs sm:text-sm"
                           >
                             <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-                              <div>
-                                <div className="font-medium">
-                                  {app.artistName ?? "Unknown artist"}
+                              <Link href={`/explore-artists/${app.artistId}`}>
+                                <div>
+                                  <div className="font-medium">
+                                    {app.artistName ?? "Unknown artist"}
+                                  </div>
+                                  <div className="text-[11px] text-muted-foreground">
+                                    {app.artistEmail}
+                                  </div>
                                 </div>
-                                <div className="text-[11px] text-muted-foreground">
-                                  {app.artistEmail}
-                                </div>
-                              </div>
-                              <Badge
-                                variant="outline"
-                                className={statusColor[app.status]}
-                              >
-                                {statusLabel[app.status]}
-                              </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={statusColor[app.status]}
+                                >
+                                  {statusLabel[app.status]}
+                                </Badge>
+                              </Link>
                             </div>
                             {app.message && (
                               <p className="mb-2 text-xs">"{app.message}"</p>
