@@ -21,7 +21,7 @@ type ArtistProfile = {
   spotifyUrl: string | null;
   youtubeUrl: string | null;
   image: string | null;
-  name: string; // backend already resolves stageName ?? name
+  name: string;
 };
 
 type MusicRow = {
@@ -139,7 +139,6 @@ export default function ArtistDetail() {
     <>
       <HeroHeader />
       <main className="flex min-h-screen flex-col pt-20">
-        {/* Cover + Avatar */}
         <div className="flex h-fit justify-start bg-neutral-600 px-20">
           {loading ? (
             <Skeleton className="aspect-square w-32 translate-y-1/2 rounded-full bg-neutral-800" />

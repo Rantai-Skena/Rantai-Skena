@@ -15,6 +15,9 @@ import { Stepper } from "@/components/ui/stepper";
 import { authClient } from "@/lib/auth-client";
 
 export default function OnboardingArtist() {
+  const [bandImageUrl, setBandImageUrl] = useState<string>("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const steps = [{ title: "" }, { title: "" }, { title: "" }];
   const [currentStep, setCurrentStep] = useState(0);
   const genres = [
@@ -64,6 +67,7 @@ export default function OnboardingArtist() {
           instagram: value.instagram,
           spotify: value.spotify,
           youtube: value.youtube,
+          imageUrl: bandImageUrl || undefined,
         };
 
         const res = await fetch(`${baseUrl}/api/artist/profile`, {
@@ -107,6 +111,49 @@ export default function OnboardingArtist() {
       }),
     },
   });
+
+  async function handleBandImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+    if (!baseUrl) {
+      toast.error("Server URL is not configured");
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${baseUrl}/api/upload`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      const data = (await res.json()) as {
+        success?: boolean;
+        url?: string;
+        error?: string;
+      };
+
+      if (!res.ok || !data?.success || !data.url) {
+        throw new Error(data?.error ?? "Upload failed");
+      }
+
+      setBandImageUrl(data.url);
+      toast.success("Band image uploaded!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload band image");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   if (isPending) {
     return <Loader />;
@@ -163,6 +210,26 @@ export default function OnboardingArtist() {
                     form.handleSubmit();
                   }}
                 >
+                  <div className="space-y-2">
+                    <Label>Band image</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBandImageChange}
+                    />
+                    {uploadingImage && (
+                      <p className="text-muted-foreground text-xs">
+                        Uploading band image...
+                      </p>
+                    )}
+                    {bandImageUrl && (
+                      <img
+                        src={bandImageUrl}
+                        alt="Band image preview"
+                        className="mt-2 h-32 w-32 rounded-md object-cover"
+                      />
+                    )}
+                  </div>
                   <div>
                     <form.Field name="name">
                       {(field) => (

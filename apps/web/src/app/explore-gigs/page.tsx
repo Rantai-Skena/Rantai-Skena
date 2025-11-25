@@ -27,6 +27,7 @@ interface ServerEvent {
   genres: string[] | null;
   description: string | null;
   isPublished: boolean;
+  imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,7 @@ interface UiEvent {
   startsAt: Date;
   endsAt: Date | null;
   genres: string[];
+  imageUrl: string | null;
 }
 
 const ALL_GENRES = [
@@ -75,6 +77,7 @@ export default function GigsPage() {
           startsAt: new Date(e.startsAt),
           endsAt: e.endsAt ? new Date(e.endsAt) : null,
           genres: e.genres ?? [],
+          imageUrl: e.imageUrl,
         }));
 
         setEvents(mapped);
@@ -244,7 +247,15 @@ export default function GigsPage() {
                     key={event.id}
                     className="hover:-translate-y-2 w-full overflow-hidden border border-neutral-700 bg-neutral-800 pb-0 shadow-xl transition-all hover:border-fuchsia-500 hover:shadow-[0_0_25px_rgba(255,78,134,0.35)]"
                   >
-                    <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300" />
+                    {event.imageUrl ? (
+                      <img
+                        src={event.imageUrl}
+                        alt={event.name}
+                        className="aspect-video w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300" />
+                    )}
 
                     <div className="flex flex-col gap-3 p-4">
                       <h3 className="font-bold text-white text-xl leading-tight">

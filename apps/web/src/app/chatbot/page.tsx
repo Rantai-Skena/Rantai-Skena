@@ -235,13 +235,13 @@ export default function ChatbotPage() {
         prev.map((t) =>
           t.id === threadId
             ? {
-              ...t,
-              updatedAt: Date.now(),
-              title:
-                t.title === DEFAULT_THREAD_TITLE || !t.title
-                  ? buildTitleFromMessages(history)
-                  : t.title,
-            }
+                ...t,
+                updatedAt: Date.now(),
+                title:
+                  t.title === DEFAULT_THREAD_TITLE || !t.title
+                    ? buildTitleFromMessages(history)
+                    : t.title,
+              }
             : t,
         ),
       );
@@ -313,9 +313,9 @@ export default function ChatbotPage() {
           const next: ThreadMessageLike[] = current.map((m) =>
             m.id === assistantId
               ? ({
-                ...m,
-                content: makeTextContent(ERROR_MESSAGE),
-              } satisfies ThreadMessageLike)
+                  ...m,
+                  content: makeTextContent(ERROR_MESSAGE),
+                } satisfies ThreadMessageLike)
               : m,
           );
           return { ...prev, [threadId]: next };

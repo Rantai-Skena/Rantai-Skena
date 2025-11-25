@@ -20,6 +20,7 @@ type ServerEvent = {
   genres: string[] | null;
   description: string | null;
   isPublished: boolean;
+  imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -33,6 +34,7 @@ type UiEvent = {
   endsAt: Date | null;
   genres: string[];
   description?: string | null;
+  imageUrl: string | null;
 };
 
 interface ApplicationResponse {
@@ -67,37 +69,40 @@ const InfoItem = ({
 export default function EventDetail() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const id = params?.id;
+  const eventId = params?.id;
 
   const [event, setEvent] = useState<UiEvent | null>(null);
   const [moreEvents, setMoreEvents] = useState<UiEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!eventId) return;
 
-    void (async () => {
+    const fetchEventData = async (): Promise<void> => {
       try {
         setLoading(true);
 
-        // 1) detail event
-        const row = await apiGet<ServerEvent>(`/events/${id}`);
-        const mapped: UiEvent = {
-          id: row.id,
-          agentId: row.agentId,
-          name: row.name,
-          location: row.location,
-          startsAt: new Date(row.startsAt),
-          endsAt: row.endsAt ? new Date(row.endsAt) : null,
-          genres: row.genres ?? [],
-          description: row.description,
+        // Fetch event detail
+        const eventData = await apiGet<ServerEvent>(`/events/${eventId}`);
+        const mappedEvent: UiEvent = {
+          id: eventData.id,
+          agentId: eventData.agentId,
+          name: eventData.name,
+          location: eventData.location,
+          startsAt: new Date(eventData.startsAt),
+          endsAt: eventData.endsAt ? new Date(eventData.endsAt) : null,
+          genres: eventData.genres ?? [],
+          description: eventData.description,
+          imageUrl: eventData.imageUrl,
         };
-        setEvent(mapped);
+        setEvent(mappedEvent);
 
-        // 2) more events by same agent (pakai list published)
-        const list = await apiGet<ServerEvent[]>("/events");
-        const more = list
-          .filter((e) => e.agentId === row.agentId && e.id !== row.id)
+        // Fetch more events by same agent
+        const eventsList = await apiGet<ServerEvent[]>("/events");
+        const filteredMoreEvents = eventsList
+          .filter(
+            (e) => e.agentId === eventData.agentId && e.id !== eventData.id,
+          )
           .map((e) => ({
             id: e.id,
             agentId: e.agentId,
@@ -107,19 +112,22 @@ export default function EventDetail() {
             endsAt: e.endsAt ? new Date(e.endsAt) : null,
             genres: e.genres ?? [],
             description: e.description,
+            imageUrl: e.imageUrl,
           }))
           .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
           .slice(0, 8);
 
-        setMoreEvents(more);
-      } catch (err) {
-        console.error(err);
+        setMoreEvents(filteredMoreEvents);
+      } catch (error) {
+        console.error("Failed to fetch event data:", error);
         toast.error("Event tidak ditemukan atau gagal dimuat");
       } finally {
         setLoading(false);
       }
-    })();
-  }, [id]);
+    };
+
+    void fetchEventData();
+  }, [eventId]);
 
   const dateLabel = useMemo(() => {
     if (!event) return "";
@@ -128,19 +136,20 @@ export default function EventDetail() {
 
   const timeLabel = useMemo(() => {
     if (!event) return "";
-    const start = event.startsAt.toLocaleTimeString("id-ID", {
+    const startTime = event.startsAt.toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
     });
-    const end = event.endsAt
+    const endTime = event.endsAt
       ? event.endsAt.toLocaleTimeString("id-ID", {
           hour: "2-digit",
           minute: "2-digit",
         })
       : null;
-    return end ? `${start} WIB - ${end} WIB` : `${start} WIB`;
+    return endTime ? `${startTime} WIB - ${endTime} WIB` : `${startTime} WIB`;
   }, [event]);
-  async function handleApply(): Promise<void> {
+
+  const handleApply = async (): Promise<void> => {
     if (!event) return;
 
     try {
@@ -167,7 +176,7 @@ export default function EventDetail() {
 
       toast.error(errorMessage);
     }
-  }
+  };
 
   return (
     <>
@@ -177,8 +186,16 @@ export default function EventDetail() {
           {/* Cover / Banner */}
           {loading ? (
             <Skeleton className="aspect-video rounded-xl lg:aspect-5/4" />
+          ) : event?.imageUrl ? (
+            <img
+              src={event.imageUrl}
+              alt={event.name}
+              className="aspect-video rounded-xl object-cover lg:aspect-5/4"
+            />
           ) : (
-            <div className="aspect-video rounded-xl bg-gray-200 lg:aspect-5/4" />
+            <div className="flex aspect-video items-center justify-center rounded-xl lg:aspect-5/4">
+              <span className="text-gray-500">No image available</span>
+            </div>
           )}
 
           {/* Detail */}
@@ -205,13 +222,13 @@ export default function EventDetail() {
                 </h2>
 
                 <div className="flex flex-wrap gap-2">
-                  {event.genres.map((g) => (
+                  {event.genres.map((genre) => (
                     <span
-                      key={g}
+                      key={genre}
                       className="rounded-full border border-gradient-artist bg-card px-2 py-0.5 font-medium text-xs"
                     >
                       <span className="bg-gradient-artist bg-clip-text text-transparent">
-                        {g}
+                        {genre}
                       </span>
                     </span>
                   ))}
@@ -277,24 +294,41 @@ export default function EventDetail() {
             </div>
           ) : (
             <div className="flex gap-6 overflow-x-auto pb-4">
-              {moreEvents.map((e) => {
-                const d = e.startsAt.toLocaleDateString("id-ID", {
-                  dateStyle: "medium",
-                });
-                const t = e.startsAt.toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
+              {moreEvents.map((moreEvent) => {
+                const eventDate = moreEvent.startsAt.toLocaleDateString(
+                  "id-ID",
+                  {
+                    dateStyle: "medium",
+                  },
+                );
+                const eventTime = moreEvent.startsAt.toLocaleTimeString(
+                  "id-ID",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  },
+                );
 
                 return (
                   <div
-                    key={e.id}
+                    key={moreEvent.id}
                     className="w-full min-w-[300px] max-w-xs shrink-0 rounded-2xl border bg-card p-4 shadow-xl transition-all duration-300 hover:border-sky-500 hover:shadow-[0_0_25px_rgba(31,154,255,0.35)] sm:p-5"
                   >
-                    <div className="mb-4 aspect-video h-auto w-full rounded-xl bg-zinc-300" />
+                    {moreEvent.imageUrl ? (
+                      <img
+                        src={moreEvent.imageUrl}
+                        alt={moreEvent.name}
+                        className="mb-4 aspect-video w-full rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div className="mb-4 flex aspect-video w-full items-center justify-center rounded-xl bg-zinc-300">
+                        <span className="text-sm text-zinc-600">No image</span>
+                      </div>
+                    )}
+
                     <div className="flex flex-col gap-2">
                       <div className="inline-flex gap-1.5 self-start rounded-full">
-                        {e.genres.map((genre) => (
+                        {moreEvent.genres.map((genre) => (
                           <span
                             key={genre}
                             className="rounded-full border border-gradient-artist bg-card px-2 py-0.5 font-medium text-xs"
@@ -307,13 +341,13 @@ export default function EventDetail() {
                       </div>
 
                       <h2 className="mt-1 font-bold text-white text-xl leading-tight">
-                        {e.name}
+                        {moreEvent.name}
                       </h2>
                       <p className="font-normal text-sm text-zinc-400">
-                        {e.location} &bull; {d}
+                        {moreEvent.location} &bull; {eventDate}
                       </p>
                       <p className="font-normal text-sm text-zinc-400">
-                        {t} WIB
+                        {eventTime} WIB
                       </p>
                     </div>
 
@@ -321,7 +355,9 @@ export default function EventDetail() {
                       <Button
                         variant="artist"
                         className="w-full"
-                        onClick={() => router.push(`/explore-gigs/${e.id}`)}
+                        onClick={() =>
+                          router.push(`/explore-gigs/${moreEvent.id}`)
+                        }
                       >
                         Detail
                       </Button>

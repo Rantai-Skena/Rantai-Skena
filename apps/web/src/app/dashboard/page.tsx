@@ -22,7 +22,6 @@ export default function DashboardPage() {
     }
   };
 
-
   useEffect(() => {
     if (!(isPending || session?.user)) {
       router.push("/login");

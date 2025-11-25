@@ -174,7 +174,7 @@ export default function OnboardingAgent() {
                             onBlur={field.handleBlur}
                             onChange={(e) => field.handleChange(e.target.value)}
                             value={field.state.value}
-                            placeholder="Enter your band name"
+                            placeholder="Enter your Agent name"
                           />
                           {field.state.meta.errors.map((error) => (
                             <p className="text-red-500" key={error?.message}>

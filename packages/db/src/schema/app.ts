@@ -22,7 +22,7 @@ export const artistProfile = pgTable("artist_profile", {
   city: text("city"),
   genre: text("genre"),
   bio: text("bio"),
-
+  imageUrl: text("image_url"),
   contactEmail: text("contact_email"),
   instagram: text("instagram"),
   spotify: text("spotify"),
@@ -43,6 +43,7 @@ export const agentProfile = pgTable("agent_profile", {
   agencyName: text("agency_name").notNull(),
   city: text("city"),
   bio: text("bio"),
+  imageUrl: text("image_url"),
 
   instagram: text("instagram"),
   contactEmail: text("contact_email"),
@@ -59,6 +60,7 @@ export const event = pgTable("event", {
   agentId: text("agent_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url"),
 
   name: text("name").notNull(),
   location: text("location").notNull(),

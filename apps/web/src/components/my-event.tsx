@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api-client";
+import { uploadImage } from "@/lib/upload-image";
 
 type EventRow = {
   id: string;
@@ -21,6 +22,7 @@ type EventRow = {
   genres: string[] | null;
   description: string | null;
   isPublished: boolean;
+  imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -62,6 +64,7 @@ export default function MyEvent() {
 
   const [isCreating, setIsCreating] = useState(false);
   const [isCreatingLoading, setIsCreatingLoading] = useState(false);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -70,8 +73,8 @@ export default function MyEvent() {
     endsAt: "",
     genres: "",
     description: "",
+    imageUrl: "",
   });
-
 
   useEffect(() => {
     void fetchEvents();
@@ -90,8 +93,36 @@ export default function MyEvent() {
     }
   };
 
-  const fetchApplications = async (eventId: string): Promise<void> => {
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      toast.error("File harus berupa gambar");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 5MB");
+      return;
+    }
+
+    try {
+      setIsImageUploading(true);
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, imageUrl: url }));
+      toast.success("Gambar berhasil diupload");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      toast.error("Gagal upload gambar");
+    } finally {
+      setIsImageUploading(false);
+    }
+  };
+
+  const fetchApplications = async (eventId: string): Promise<void> => {
     if (applicationsByEvent[eventId]) {
       setExpandedEventId((prev) => (prev === eventId ? null : eventId));
       return;
@@ -129,6 +160,7 @@ export default function MyEvent() {
         location: form.location,
         startsAt: form.startsAt,
         description: form.description || null,
+        imageUrl: form.imageUrl || null,
         genres:
           form.genres
             .split(",")
@@ -154,6 +186,7 @@ export default function MyEvent() {
         endsAt: "",
         genres: "",
         description: "",
+        imageUrl: "",
       });
       setIsCreating(false);
     } catch (error) {
@@ -308,6 +341,38 @@ export default function MyEvent() {
               />
             </div>
 
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="image">Event Image</Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={isImageUploading}
+              />
+              {isImageUploading && (
+                <p className="text-muted-foreground text-xs">Uploading...</p>
+              )}
+              {form.imageUrl && (
+                <div className="mt-2">
+                  <img
+                    src={form.imageUrl}
+                    alt="Event preview"
+                    className="h-32 w-48 rounded-md border object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="mt-1 text-destructive"
+                    onClick={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                  >
+                    Hapus gambar
+                  </Button>
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end gap-2 md:col-span-2">
               <Button
                 type="button"
@@ -321,6 +386,7 @@ export default function MyEvent() {
                     endsAt: "",
                     genres: "",
                     description: "",
+                    imageUrl: "",
                   });
                 }}
               >
@@ -329,7 +395,7 @@ export default function MyEvent() {
               <Button
                 type="submit"
                 variant="destructive"
-                disabled={isCreatingLoading}
+                disabled={isCreatingLoading || isImageUploading}
               >
                 {isCreatingLoading ? "Menyimpan..." : "Simpan event"}
               </Button>
@@ -365,6 +431,14 @@ export default function MyEvent() {
                 key={event.id}
                 className="flex flex-col gap-3 border p-4 sm:p-5"
               >
+                {event.imageUrl && (
+                  <img
+                    src={event.imageUrl}
+                    alt={event.name}
+                    className="h-32 w-full rounded-md object-cover"
+                  />
+                )}
+
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="font-semibold text-base sm:text-lg">

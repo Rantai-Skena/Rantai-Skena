@@ -60,7 +60,7 @@ router.get("/", async (c) => {
       stageName: artistProfile.stageName,
       city: artistProfile.city,
       genre: artistProfile.genre,
-      image: user.image,
+      image: artistProfile.imageUrl,
       name: user.name,
     })
     .from(user)
@@ -88,76 +88,108 @@ router.get("/", async (c) => {
 
 // GET /api/artists/:id
 router.get("/:id", async (c) => {
-  const artistId = c.req.param("id");
+  try {
+    const artistId = c.req.param("id");
 
-  const profileRows = await db
-    .select({
-      userId: artistProfile.userId,
-      stageName: artistProfile.stageName,
-      city: artistProfile.city,
-      bio: artistProfile.bio,
-      genre: artistProfile.genre,
-      instagram: artistProfile.instagram,
-      contactEmail: artistProfile.contactEmail,
-      spotifyUrl: artistProfile.spotify,
-      youtubeUrl: artistProfile.youtube,
-      image: user.image,
-      name: user.name,
-    })
-    .from(artistProfile)
-    .innerJoin(user, eq(artistProfile.userId, user.id))
-    .where(
-      and(
-        eq(artistProfile.userId, artistId),
-        isNotNull(artistProfile.stageName), // Ensure profile exists
-      ),
-    )
-    .limit(1);
-
-  const artistProfile_data = profileRows[0];
-  if (!artistProfile_data) {
-    return c.json({ success: false, error: "Artist not found" }, 404);
-  }
-
-  const [musicTracks, galleryImages] = await Promise.all([
-    db
+    const profileRows = await db
       .select({
-        id: music.id,
-        title: music.title,
-        coverUrl: music.coverUrl,
-        spotifyUrl: music.spotifyUrl,
-        youtubeUrl: music.youtubeUrl,
-        otherUrl: music.otherUrl,
-        createdAt: music.createdAt,
+        userId: artistProfile.userId,
+        stageName: artistProfile.stageName,
+        city: artistProfile.city,
+        bio: artistProfile.bio,
+        genre: artistProfile.genre,
+        instagram: artistProfile.instagram,
+        contactEmail: artistProfile.contactEmail,
+        spotifyUrl: artistProfile.spotify,
+        youtubeUrl: artistProfile.youtube,
+        bandImage: artistProfile.imageUrl,
+        userImage: user.image,
+        name: user.name,
       })
-      .from(music)
-      .where(eq(music.artistId, artistId))
-      .orderBy(music.createdAt),
+      .from(artistProfile)
+      .innerJoin(user, eq(artistProfile.userId, user.id))
+      .where(
+        and(
+          eq(artistProfile.userId, artistId),
+          isNotNull(artistProfile.stageName),
+        ),
+      )
+      .limit(1);
 
-    db
-      .select({
-        id: galleryImage.id,
-        imageUrl: galleryImage.imageUrl,
-        caption: galleryImage.caption,
-        createdAt: galleryImage.createdAt,
-      })
-      .from(galleryImage)
-      .where(eq(galleryImage.artistId, artistId))
-      .orderBy(galleryImage.createdAt),
-  ]);
+    const profileRow = profileRows[0];
+    if (!profileRow) {
+      return c.json({ success: false, error: "Artist not found" }, 404);
+    }
 
-  return c.json({
-    success: true,
-    data: {
-      profile: {
-        ...artistProfile_data,
-        genres: parseGenres(artistProfile_data.genre),
-        name: artistProfile_data.stageName ?? artistProfile_data.name,
+    // Create the profile object with proper structure
+    const artistProfileData = {
+      userId: profileRow.userId,
+      stageName: profileRow.stageName,
+      city: profileRow.city,
+      bio: profileRow.bio,
+      genre: profileRow.genre, // Keep original for parseGenres
+      genres: parseGenres(profileRow.genre),
+      instagram: profileRow.instagram,
+      contactEmail: profileRow.contactEmail,
+      spotifyUrl: profileRow.spotifyUrl,
+      youtubeUrl: profileRow.youtubeUrl,
+      image: profileRow.bandImage ?? profileRow.userImage ?? null,
+      name: profileRow.name,
+    };
+
+    // Fetch music and gallery data in parallel
+    const [musicTracks, galleryImages] = await Promise.all([
+      db
+        .select({
+          id: music.id,
+          title: music.title,
+          coverUrl: music.coverUrl,
+          spotifyUrl: music.spotifyUrl,
+          youtubeUrl: music.youtubeUrl,
+          otherUrl: music.otherUrl,
+          createdAt: music.createdAt,
+        })
+        .from(music)
+        .where(eq(music.artistId, artistId))
+        .orderBy(music.createdAt),
+
+      db
+        .select({
+          id: galleryImage.id,
+          imageUrl: galleryImage.imageUrl,
+          caption: galleryImage.caption,
+          createdAt: galleryImage.createdAt,
+        })
+        .from(galleryImage)
+        .where(eq(galleryImage.artistId, artistId))
+        .orderBy(galleryImage.createdAt),
+    ]);
+
+    return c.json({
+      success: true,
+      data: {
+        profile: {
+          userId: artistProfileData.userId,
+          stageName: artistProfileData.stageName,
+          city: artistProfileData.city,
+          bio: artistProfileData.bio,
+          genres: artistProfileData.genres,
+          instagram: artistProfileData.instagram,
+          contactEmail: artistProfileData.contactEmail,
+          spotifyUrl: artistProfileData.spotifyUrl,
+          youtubeUrl: artistProfileData.youtubeUrl,
+          image: artistProfileData.image,
+          name: artistProfileData.stageName ?? artistProfileData.name,
+        },
+        music: musicTracks,
+        gallery: galleryImages,
       },
-      music: musicTracks,
-      gallery: galleryImages,
-    },
-  });
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch artist data";
+    return c.json({ success: false, error: errorMessage }, 500);
+  }
 });
 
 export default router;

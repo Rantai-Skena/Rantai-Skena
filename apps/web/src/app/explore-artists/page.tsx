@@ -153,7 +153,19 @@ export default function ArtistsPage() {
                 key={artist.id}
                 className="hover:-translate-y-2 w-full overflow-hidden border border-neutral-700 bg-neutral-800 pb-0 shadow-xl transition-all hover:border-fuchsia-500 hover:shadow-[0_0_25px_rgba(255,78,134,0.35)]"
               >
-                <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300" />
+                {/* <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300" />
+                 */}
+                {artist.image ? (
+                  <img
+                    src={artist.image}
+                    alt={artist.name}
+                    className="flex aspect-video w-full items-center justify-center"
+                  />
+                ) : (
+                  <div className="flex aspect-video w-full items-center justify-center bg-gray-600 text-gray-300">
+                    No Image
+                  </div>
+                )}
 
                 <div className="flex flex-col gap-3 p-4">
                   <h3 className="font-bold text-white text-xl leading-tight">

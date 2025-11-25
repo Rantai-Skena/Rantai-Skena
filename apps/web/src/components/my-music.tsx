@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Link, Upload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiGet, apiPost } from "@/lib/api-client";
+import { uploadImage } from "@/lib/upload-image";
 
 type MusicRow = {
   id: string;
@@ -48,11 +50,13 @@ export default function MyMusic() {
   const [galleryForm, setGalleryForm] = useState({
     imageUrl: "",
     caption: "",
+    imageFile: null as File | null,
+    uploadMethod: "url" as "url" | "upload",
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [savingMusic, setSavingMusic] = useState(false);
   const [savingGallery, setSavingGallery] = useState(false);
-
 
   useEffect(() => {
     void fetchAll();
@@ -114,34 +118,103 @@ export default function MyMusic() {
     }
   }
 
-  async function handleCreateGallery(e: React.FormEvent) {
+  async function uploadImageFile(file: File): Promise<string> {
+    return await uploadImage(file);
+  }
+
+  async function handleCreateGallery(e: React.FormEvent): Promise<void> {
     e.preventDefault();
 
-    if (!galleryForm.imageUrl) {
+    const isUrlMethod = galleryForm.uploadMethod === "url";
+
+    if (isUrlMethod && !galleryForm.imageUrl) {
       toast.error("Image URL harus diisi");
+      return;
+    }
+
+    if (!isUrlMethod && !galleryForm.imageFile) {
+      toast.error("File gambar harus dipilih");
       return;
     }
 
     try {
       setSavingGallery(true);
 
-      const created = await apiPost<GalleryRow, typeof galleryForm>(
-        "/gallery",
-        {
-          imageUrl: galleryForm.imageUrl,
-          caption: galleryForm.caption || "",
-        },
-      );
+      let finalImageUrl = "";
 
-      setGallery((prev) => [created, ...prev]);
-      setGalleryForm({ imageUrl: "", caption: "" });
+      if (isUrlMethod) {
+        finalImageUrl = galleryForm.imageUrl;
+      } else {
+        // Upload file first
+        finalImageUrl = await uploadImageFile(galleryForm.imageFile as File);
+      }
+
+      const created = await apiPost<
+        GalleryRow,
+        { imageUrl: string; caption: string }
+      >("/gallery", {
+        imageUrl: finalImageUrl,
+        caption: galleryForm.caption || "",
+      });
+
+      setGallery((previousGallery) => [created, ...previousGallery]);
+      setGalleryForm({
+        imageUrl: "",
+        caption: "",
+        imageFile: null,
+        uploadMethod: "url",
+      });
+
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
 
       toast.success("Foto gallery berhasil ditambahkan");
-    } catch (err) {
-      console.error(err);
-      toast.error("Gagal menyimpan gallery");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Gagal menyimpan gallery";
+      toast.error(errorMessage);
     } finally {
       setSavingGallery(false);
+    }
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>): void {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("File harus berupa gambar");
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSizeInMB = 5;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file.size > maxSizeInBytes) {
+      toast.error(`File terlalu besar. Maksimal ${maxSizeInMB}MB`);
+      return;
+    }
+
+    setGalleryForm((previousForm) => ({
+      ...previousForm,
+      imageFile: file,
+    }));
+  }
+
+  function resetGalleryForm(): void {
+    setGalleryForm({
+      imageUrl: "",
+      caption: "",
+      imageFile: null,
+      uploadMethod: "url",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   }
 
@@ -248,50 +321,132 @@ export default function MyMusic() {
         </form>
       </Card>
 
-      {/* Form tambah gallery */}
       <Card className="border p-4 sm:p-6">
         <h3 className="mb-3 font-semibold text-sm sm:text-base">
           Tambah Foto Gallery
         </h3>
+
         <form
           className="grid gap-4 md:grid-cols-2"
           onSubmit={handleCreateGallery}
         >
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="gallery-image">Image URL</Label>
-            <Input
-              id="gallery-image"
-              value={galleryForm.imageUrl}
-              onChange={(e) =>
-                setGalleryForm((f) => ({ ...f, imageUrl: e.target.value }))
-              }
-              placeholder="https://..."
-            />
+          {/* Upload method selector */}
+          <div className="space-y-3 md:col-span-2">
+            <Label>Pilih metode upload</Label>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant={
+                  galleryForm.uploadMethod === "url" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() =>
+                  setGalleryForm((previousForm) => ({
+                    ...previousForm,
+                    uploadMethod: "url",
+                    imageFile: null,
+                  }))
+                }
+                className="flex items-center gap-2"
+              >
+                <Link className="h-4 w-4" />
+                URL Link
+              </Button>
+              <Button
+                type="button"
+                variant={
+                  galleryForm.uploadMethod === "upload" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() =>
+                  setGalleryForm((previousForm) => ({
+                    ...previousForm,
+                    uploadMethod: "upload",
+                    imageUrl: "",
+                  }))
+                }
+                className="flex items-center gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                Upload File
+              </Button>
+            </div>
           </div>
 
+          {/* Conditional input based on method */}
+          {galleryForm.uploadMethod === "url" ? (
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="gallery-image-url">Image URL</Label>
+              <Input
+                id="gallery-image-url"
+                type="url"
+                value={galleryForm.imageUrl}
+                onChange={(e) =>
+                  setGalleryForm((previousForm) => ({
+                    ...previousForm,
+                    imageUrl: e.target.value,
+                  }))
+                }
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+          ) : (
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="gallery-image-file">Upload Gambar</Label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="gallery-image-file"
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1 file:text-primary-foreground file:text-sm"
+                />
+                {galleryForm.imageFile && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setGalleryForm((previousForm) => ({
+                        ...previousForm,
+                        imageFile: null,
+                      }))
+                    }
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              {galleryForm.imageFile && (
+                <p className="text-muted-foreground text-sm">
+                  File dipilih: {galleryForm.imageFile.name}(
+                  {(galleryForm.imageFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Caption input */}
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="gallery-caption">Caption (optional)</Label>
             <Input
               id="gallery-caption"
               value={galleryForm.caption}
               onChange={(e) =>
-                setGalleryForm((f) => ({ ...f, caption: e.target.value }))
+                setGalleryForm((previousForm) => ({
+                  ...previousForm,
+                  caption: e.target.value,
+                }))
               }
               placeholder="Deskripsi singkat foto"
             />
           </div>
 
+          {/* Form actions */}
           <div className="flex justify-end gap-2 md:col-span-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                setGalleryForm({
-                  imageUrl: "",
-                  caption: "",
-                })
-              }
-            >
+            <Button type="button" variant="outline" onClick={resetGalleryForm}>
               Reset
             </Button>
             <Button
