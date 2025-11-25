@@ -1,6 +1,7 @@
 "use client";
 import { LayoutDashboard, LogOut, Menu, User, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import type { UrlObject } from "url";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,9 @@ import { apiGet } from "@/lib/api-client";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-type Role = "artist" | "agent" | "public";
+type Role = "artist" | "agent";
 
 const menus: Record<Role, { name: string; href: string }[]> = {
-  public: [
-    { name: "Explore gigs", href: "/explore-gigs" },
-    { name: "Chatbot", href: "/chatbot" },
-  ],
   artist: [
     { name: "Dashboard", href: "/dashboard" },
     { name: "Explore gigs", href: "/explore-gigs" },
@@ -34,23 +31,13 @@ const menus: Record<Role, { name: string; href: string }[]> = {
   ],
 };
 
-const artistMenus = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Explore Gigs", href: "/explore-gigs" },
-  { name: "Chatbot", href: "/chatbot" },
-];
-
-const agentMenus = [
-  { name: "Dashboard", href: "#link" },
-  { name: "Explore Artists", href: "#link" },
-];
-
 export const HeroHeader = () => {
   const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuItems, setMenuItems] = useState<{ name: string; href: string }[]>(
     [],
   );
+  const pathname = usePathname();
   // const [menuItems, setMenuItems] = useState<{ name: string; href: string }[]>(
   // [],
   // );
@@ -66,7 +53,7 @@ export const HeroHeader = () => {
     if (isPending) return;
 
     if (!session?.user) {
-      setMenuItems(menus.public);
+      setMenuItems([]);
       return;
     }
 
@@ -81,11 +68,11 @@ export const HeroHeader = () => {
         } else if (data.role === "agent") {
           setMenuItems(menus.agent);
         } else {
-          setMenuItems(menus.public);
+          setMenuItems([]);
         }
       } catch (error) {
         console.error("Failed to fetch user role:", error);
-        setMenuItems(menus.public);
+        setMenuItems([]);
       }
     };
 
@@ -110,7 +97,7 @@ export const HeroHeader = () => {
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "max-w-4xl rounded-2xl border bg-background/60 shadow-md backdrop-blur-lg lg:px-5",
+            "max-w-4xl rounded-2xl border bg-background/60 shadow-md backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -138,7 +125,11 @@ export const HeroHeader = () => {
                 {menuItems.map((item, index) => (
                   <li key={index}>
                     <Link
-                      className="block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline"
+                      className={cn(
+                        "block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline",
+                        pathname === item.href &&
+                        "text-white hover:text-white hover:no-underline",
+                      )}
                       href={item.href as unknown as UrlObject}
                     >
                       <span>{item.name}</span>
@@ -154,7 +145,11 @@ export const HeroHeader = () => {
                   {menuItems.map((item, index) => (
                     <li key={index}>
                       <Link
-                        className="block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline"
+                        className={cn(
+                          "block text-muted-foreground underline-offset-4 duration-150 hover:text-accent-foreground hover:underline",
+                          pathname === item.href &&
+                          "text-white hover:text-white hover:no-underline",
+                        )}
                         href={item.href as unknown as UrlObject}
                       >
                         <span>{item.name}</span>
