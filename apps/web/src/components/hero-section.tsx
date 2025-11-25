@@ -161,13 +161,6 @@ export default function HeroSection() {
                       <span className="px-2">Get Started</span>
                     </Button>
                   </div>
-                  <div className="md:pr-1.5 lg:pr-0">
-                    <Button size="sm" variant="outline">
-                      <Link href="/explore-gigs" className="px-2">
-                        Explore gigs
-                      </Link>
-                    </Button>
-                  </div>
                 </AnimatedGroup>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6">
                   {stats.map((stat) => (
