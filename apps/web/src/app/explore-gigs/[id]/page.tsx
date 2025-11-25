@@ -253,12 +253,12 @@ export default function EventDetail() {
                   <Button variant="artist" onClick={handleApply}>
                     Apply
                   </Button>
-                  <Button
+                  {/* <Button
                     variant="artistOutline"
                     onClick={() => router.push("/chatbot")}
                   >
                     Contact
-                  </Button>
+                  </Button> */}
                 </div>
 
                 <p className="text-sm text-zinc-500">{dateLabel}</p>
