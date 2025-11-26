@@ -86,9 +86,9 @@ export default function GigsPage() {
   };
 
   const genres = useMemo(() => {
-    return Array.from(
-      new Set(events.flatMap((e) => e.genres)),
-    ).sort((a, b) => a.localeCompare(b));
+    return Array.from(new Set(events.flatMap((e) => e.genres))).sort((a, b) =>
+      a.localeCompare(b),
+    );
   }, [events]);
 
   const cities = useMemo(() => {
