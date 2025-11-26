@@ -13,6 +13,7 @@ import { apiGet, apiPost } from "@/lib/api-client";
 type ServerEvent = {
   id: string;
   agentId: string;
+  agentName: string;
   name: string;
   location: string;
   startsAt: string; // ISO
@@ -28,6 +29,7 @@ type ServerEvent = {
 type UiEvent = {
   id: string;
   agentId: string;
+  agentName: string;
   name: string;
   location: string;
   startsAt: Date;
@@ -87,6 +89,7 @@ export default function EventDetail() {
         const mappedEvent: UiEvent = {
           id: eventData.id,
           agentId: eventData.agentId,
+          agentName: eventData.agentName,
           name: eventData.name,
           location: eventData.location,
           startsAt: new Date(eventData.startsAt),
@@ -96,7 +99,7 @@ export default function EventDetail() {
           imageUrl: eventData.imageUrl,
         };
         setEvent(mappedEvent);
-
+        console.log("Fetched event:", mappedEvent);
         // Fetch more events by same agent
         const eventsList = await apiGet<ServerEvent[]>("/events");
         const filteredMoreEvents = eventsList
@@ -106,6 +109,7 @@ export default function EventDetail() {
           .map((e) => ({
             id: e.id,
             agentId: e.agentId,
+            agentName: e.agentName,
             name: e.name,
             location: e.location,
             startsAt: new Date(e.startsAt),
@@ -115,8 +119,9 @@ export default function EventDetail() {
             imageUrl: e.imageUrl,
           }))
           .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
-          .slice(0, 8);
-
+          .slice(0, 8)
+        console.log("Fetched more events:", filteredMoreEvents);
+        console.log(eventsList[0].agentName)
         setMoreEvents(filteredMoreEvents);
       } catch (error) {
         console.error("Failed to fetch event data:", error);
@@ -142,9 +147,9 @@ export default function EventDetail() {
     });
     const endTime = event.endsAt
       ? event.endsAt.toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
+        hour: "2-digit",
+        minute: "2-digit",
+      })
       : null;
     return endTime ? `${startTime} WIB - ${endTime} WIB` : `${startTime} WIB`;
   }, [event]);
@@ -218,7 +223,7 @@ export default function EventDetail() {
 
                 {/* Agent name belum ada endpoint public, jadi tampilkan id dulu */}
                 <h2 className="font-medium text-xl text-zinc-200">
-                  Agent {event.agentId.slice(0, 6)}
+                  Agent {event.agentName}
                 </h2>
 
                 <div className="flex flex-wrap gap-2">

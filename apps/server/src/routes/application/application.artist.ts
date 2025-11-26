@@ -2,7 +2,7 @@
 
 import { db } from "@rantai-skena/db";
 import { application, event as eventTable } from "@rantai-skena/db/schema/app";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { nanoid } from "nanoid";
 import { roleGuard } from "../../middleware/roleGuard";
@@ -39,7 +39,7 @@ router.post("/", roleGuard(["artist"]), async (c) => {
     .select()
     .from(application)
     .where(
-      eq(application.eventId, eventId) && eq(application.artistId, user.id),
+      and(eq(application.eventId, eventId), eq(application.artistId, user.id)),
     );
 
   if (existingApplication) {
