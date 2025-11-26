@@ -308,7 +308,11 @@ export default function OnboardingArtist() {
                       <Button
                         type="button"
                         className="w-full"
-                        disabled={state.isSubmitting || uploadingImage || !state.values.name}
+                        disabled={
+                          state.isSubmitting ||
+                          uploadingImage ||
+                          !state.values.name
+                        }
                         variant="destructive"
                         onClick={nextPage}
                       >
@@ -361,16 +365,18 @@ export default function OnboardingArtist() {
                                     ]);
                                   }
                                 }}
-                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
-                                  ? "border-purple-500"
-                                  : "border-white/40 bg-transparent hover:bg-white/10"
-                                  }`}
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${
+                                  selected
+                                    ? "border-purple-500"
+                                    : "border-white/40 bg-transparent hover:bg-white/10"
+                                }`}
                               >
                                 <span
-                                  className={`${selected
-                                    ? "bg-gradient-artist bg-clip-text text-transparent"
-                                    : "text-white"
-                                    }`}
+                                  className={`${
+                                    selected
+                                      ? "bg-gradient-artist bg-clip-text text-transparent"
+                                      : "text-white"
+                                  }`}
                                 >
                                   {g}
                                 </span>
