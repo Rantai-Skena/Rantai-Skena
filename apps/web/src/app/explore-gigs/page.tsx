@@ -42,20 +42,6 @@ interface UiEvent {
   imageUrl: string | null;
 }
 
-const ALL_GENRES = [
-  "Pop",
-  "Indie",
-  "Hardcore",
-  "Emo",
-  "Rock",
-  "Jazz",
-  "R&B",
-  "HipHop",
-  "Punk",
-  "Metalcore",
-  "EDM",
-];
-
 export default function GigsPage() {
   const [events, setEvents] = useState<UiEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +84,12 @@ export default function GigsPage() {
       return next;
     });
   };
+
+  const genres = useMemo(() => {
+    return Array.from(
+      new Set(events.flatMap((e) => e.genres)),
+    ).sort((a, b) => a.localeCompare(b));
+  }, [events]);
 
   const cities = useMemo(() => {
     return Array.from(
@@ -159,7 +151,7 @@ export default function GigsPage() {
                 <DropdownMenuLabel>Select Genres</DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                {ALL_GENRES.map((genre) => (
+                {genres.map((genre) => (
                   <DropdownMenuCheckboxItem
                     key={genre}
                     checked={selectedGenres.has(genre)}
