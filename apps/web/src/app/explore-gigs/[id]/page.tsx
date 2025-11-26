@@ -119,9 +119,9 @@ export default function EventDetail() {
             imageUrl: e.imageUrl,
           }))
           .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
-          .slice(0, 8)
+          .slice(0, 8);
         console.log("Fetched more events:", filteredMoreEvents);
-        console.log(eventsList[0].agentName)
+        console.log(eventsList[0].agentName);
         setMoreEvents(filteredMoreEvents);
       } catch (error) {
         console.error("Failed to fetch event data:", error);
@@ -147,9 +147,9 @@ export default function EventDetail() {
     });
     const endTime = event.endsAt
       ? event.endsAt.toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+          hour: "2-digit",
+          minute: "2-digit",
+        })
       : null;
     return endTime ? `${startTime} WIB - ${endTime} WIB` : `${startTime} WIB`;
   }, [event]);
