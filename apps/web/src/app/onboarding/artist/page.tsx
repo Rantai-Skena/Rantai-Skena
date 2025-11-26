@@ -18,6 +18,7 @@ export default function OnboardingArtist() {
   const [bandImageUrl, setBandImageUrl] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // const [isUploadingImage, setIsUploadingImage] = useState(false);
   const steps = [{ title: "" }, { title: "" }, { title: "" }];
   const [currentStep, setCurrentStep] = useState(0);
   const genres = [
@@ -67,6 +68,7 @@ export default function OnboardingArtist() {
           instagram: value.instagram,
           spotify: value.spotify,
           youtube: value.youtube,
+
           imageUrl: bandImageUrl || undefined,
         };
 
@@ -207,7 +209,7 @@ export default function OnboardingArtist() {
                   onSubmit={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    form.handleSubmit();
+                    void form.handleSubmit();
                   }}
                 >
                   <div className="space-y-2">
@@ -304,12 +306,13 @@ export default function OnboardingArtist() {
                   <form.Subscribe>
                     {(state) => (
                       <Button
+                        type="button"
                         className="w-full"
-                        disabled={!state.canSubmit || state.isSubmitting}
+                        disabled={state.isSubmitting || uploadingImage || !state.values.name}
                         variant="destructive"
                         onClick={nextPage}
                       >
-                        {state.isSubmitting ? "Loading..." : "Next"}
+                        {state.isSubmitting ? "Saving..." : "Finish"}
                       </Button>
                     )}
                   </form.Subscribe>
@@ -358,18 +361,16 @@ export default function OnboardingArtist() {
                                     ]);
                                   }
                                 }}
-                                className={`rounded-md border px-1 py-0.5 text-small transition ${
-                                  selected
-                                    ? "border-purple-500"
-                                    : "border-white/40 bg-transparent hover:bg-white/10"
-                                }`}
+                                className={`rounded-md border px-1 py-0.5 text-small transition ${selected
+                                  ? "border-purple-500"
+                                  : "border-white/40 bg-transparent hover:bg-white/10"
+                                  }`}
                               >
                                 <span
-                                  className={`${
-                                    selected
-                                      ? "bg-gradient-artist bg-clip-text text-transparent"
-                                      : "text-white"
-                                  }`}
+                                  className={`${selected
+                                    ? "bg-gradient-artist bg-clip-text text-transparent"
+                                    : "text-white"
+                                    }`}
                                 >
                                   {g}
                                 </span>
@@ -385,9 +386,10 @@ export default function OnboardingArtist() {
                     {(state) => (
                       <Button
                         className="w-full"
-                        disabled={!state.canSubmit || state.isSubmitting}
+                        disabled={state.values.genre.length === 0}
                         variant="destructive"
                         onClick={nextPage}
+                        type="button"
                       >
                         {state.isSubmitting ? "Loading..." : "Next"}
                       </Button>
