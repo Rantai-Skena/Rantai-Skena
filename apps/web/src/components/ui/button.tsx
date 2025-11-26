@@ -13,9 +13,9 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         artist:
-          "bg-gradient-artist text-destructive-foreground hover:bg-gradient-artist/90",
+          "bg-gradient-artist text-destructive-foreground hover:brightness-95 active:brightness-90",
         agent:
-          "bg-gradient-agent text-destructive-foreground hover:bg-gradient-agent/90",
+          "bg-gradient-agent text-destructive-foreground hover:brightness-95 active:brightness-90",
         outline:
           "border border-autumn-500 bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:

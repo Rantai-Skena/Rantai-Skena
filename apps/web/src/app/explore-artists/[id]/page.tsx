@@ -223,7 +223,7 @@ export default function ArtistDetail() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-col items-end gap-2">
+          {/* <div className="flex flex-col items-end gap-2">
             <Button variant="agent" size="lg" disabled={loading || !!error}>
               Book Now
             </Button>
@@ -234,7 +234,7 @@ export default function ArtistDetail() {
             >
               Contact
             </Button>
-          </div>
+          </div> */}
         </section>
 
         {/* Music + Gallery */}
