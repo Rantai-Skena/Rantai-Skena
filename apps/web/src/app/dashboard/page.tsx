@@ -82,7 +82,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center space-y-4">
-        <p className="text-gray-600">Loading dashboard...</p>
+        <p className="text-gray-600">Loading dashboard..</p>
       </div>
     </div>
   );
